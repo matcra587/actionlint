@@ -14,7 +14,8 @@ sha="$(git rev-parse HEAD)"
 echo "Deploying playground from ${sha}"
 
 echo 'Ensuring to install dependencies and building wasm'
-(cd ./playground && make clean && make build && make test)
+mise run playground:clean
+mise run playground:test
 
 echo 'Creating ./playground-dist'
 rm -rf ./playground-dist
@@ -54,7 +55,7 @@ else
 fi
 
 echo 'Generating and copying manual'
-make ./man/actionlint.1.html
+mise run docs:man
 cp ./man/actionlint.1.html ./playground-dist/man.html
 
 echo 'Switching to gh-pages branch'

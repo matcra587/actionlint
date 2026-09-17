@@ -80,8 +80,12 @@ jobs:
           node-version: "lts/*"
           cache: npm
           cache-dependency-path: ./playground/package-lock.json
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+        with:
+          version: '2026.9.10'
+          install: false
       - name: Build playground
-        run: make build
+        run: mise run playground:build
       - name: Lint playground
         run: npm run lint
       - name: Run tests for wasm
@@ -108,14 +112,13 @@ jobs:
             echo "$diffs" >&2
             exit 1
           fi
-      - name: Install staticcheck and govulncheck
-        run: |
-          go install honnef.co/go/tools/cmd/staticcheck@latest
-          go install golang.org/x/vuln/cmd/govulncheck@latest
-          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
-      - run: make lint SKIP_GO_GENERATE=true
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+        with:
+          version: '2026.9.10'
+          install_args: --locked --include-task-tools
+      - run: mise run lint
       - name: Lint bash scripts
-        run: shellcheck ./scripts/*.bash ./playground/*.bash
+        run: shellcheck ./scripts/*.bash ./scripts/generate-actionlint-matcher/*.bash ./playground/*.bash
   docker:
     name: Dockerfile
     runs-on: ubuntu-latest

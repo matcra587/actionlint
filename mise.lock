@@ -2,6 +2,11 @@
 
 lockfile_version = 2
 
+[[tools."go:golang.org/x/vuln/cmd/govulncheck"]]
+version = "1.6.0"
+backend = "go:golang.org/x/vuln/cmd/govulncheck"
+specifiers = ["1.6.0"]
+
 [[tools.hk]]
 version = "2.0.1"
 backend = "packslip:github.com/jdx/hk"
@@ -36,3 +41,38 @@ signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 checksum = "sha256:b3cb8ab5958393faacefabfb3a402060eb256b1fda8e1f83c74c3fc877ebff8f"
 url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-x86_64-pc-windows-msvc.zip"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
+
+[[tools.staticcheck]]
+version = "2026.1"
+backend = "aqua:dominikh/go-tools/staticcheck"
+specifiers = ["2026.1"]
+
+[tools.staticcheck."platforms.linux-arm64"]
+checksum = "sha256:dde37c023073aff5d910a85536a80b92a2ae0db75f6a89afcec1272c4fabd6fd"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.1/staticcheck_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/355496043"
+
+[tools.staticcheck."platforms.linux-arm64-musl"]
+checksum = "sha256:dde37c023073aff5d910a85536a80b92a2ae0db75f6a89afcec1272c4fabd6fd"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.1/staticcheck_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/355496043"
+
+[tools.staticcheck."platforms.linux-x64"]
+checksum = "sha256:9242b4bf5b9f5481fd720ec6d1018b38fbffe0e2730e498923c6e8053e8576be"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.1/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/355495997"
+
+[tools.staticcheck."platforms.linux-x64-musl"]
+checksum = "sha256:9242b4bf5b9f5481fd720ec6d1018b38fbffe0e2730e498923c6e8053e8576be"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.1/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/355495997"
+
+[tools.staticcheck."platforms.macos-arm64"]
+checksum = "sha256:f71553886fe4bb313da317d7abc3e16fe3cae2dba54f1e07a94a1ae160beced2"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.1/staticcheck_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/355495874"
+
+[tools.staticcheck."platforms.windows-x64"]
+checksum = "sha256:98755d516530d03058ac59cb58ab7fbb9d487d0bc2e16d16e1f700833381e135"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.1/staticcheck_windows_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/355496125"

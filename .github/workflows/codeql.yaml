@@ -48,13 +48,17 @@ jobs:
           node-version: "lts/*"
           cache: npm
           cache-dependency-path: ./playground/package-lock.json
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+        with:
+          version: '2026.9.10'
+          install: false
       - uses: github/codeql-action/init@v4
         with:
           config-file: ./.github/codeql/codeql-config.yaml
           languages: javascript-typescript
           source-root: ./playground
       - name: Build playground
-        run: make build
+        run: mise run playground:build
       - uses: github/codeql-action/analyze@v4
         with:
           category: "/language:javascript-typescript"
