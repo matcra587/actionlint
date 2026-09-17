@@ -1,11 +1,17 @@
-actionlint(1) -- static checker for GitHub Actions workflow files
-=================================================================
+actionlint 1 "" actionlint "User Manual"
+=======================================
+
+## NAME
+
+actionlint - static checker for GitHub Actions workflow files
 
 ## SYNOPSIS
 
-`actionlint` [<flags>] <br>
-`actionlint` [<flags>] <file>...<br>
-`actionlint` [<flags>] -<br>
+`actionlint` [*flags*]
+
+`actionlint` [*flags*] *file*...
+
+`actionlint` [*flags*] -
 
 
 ## DESCRIPTION
@@ -52,17 +58,17 @@ with Go template syntax.
   * `-color`:
     Always enable colorful output. This is useful to force colorful outputs
 
-  * `-config-file` <PATH>:
+  * `-config-file` *PATH*:
     File path to config file
 
   * `-debug`:
     Enable debug output (for development)
 
-  * `-format` <FORMAT>:
+  * `-format` *FORMAT*:
     Custom template to format error messages in Go template syntax. See the usage documentation
     for more details.
 
-  * `-ignore` <PATTERN>:
+  * `-ignore` *PATTERN*:
     Regular expression matching to error messages you want to ignore. This flag is repeatable. For
     example, `-ignore A -ignore B` ignores errors whose message includes "A" OR "B".
 
@@ -75,18 +81,18 @@ with Go template syntax.
   * `-oneline`:
     Use one line per one error. Useful for reading error messages from programs
 
-  * `-pyflakes` <EXECUTABLE>:
+  * `-pyflakes` *EXECUTABLE*:
     Command name or file path of "pyflakes" external command. If empty, pyflakes integration will be
     disabled (default "pyflakes")
 
-  * `-shellcheck` <EXECUTABLE>:
+  * `-shellcheck` *EXECUTABLE*:
     Command name or file path of "shellcheck" external command. If empty, shellcheck integration will
     be disabled (default "shellcheck")
 
   * `-verbose`:
     Enable verbose output
 
-  * `-stdin-filename` <NAME>:
+  * `-stdin-filename` *NAME*:
     File name when reading input from stdin (default "&lt;stdin&gt;")
 
   * `-version`:

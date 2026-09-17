@@ -93,7 +93,6 @@ around linking libc. `mise run build` does this by default.
 
 [![CI](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml)
 [![Generate](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml)
-[![Problem Matchers](https://github.com/matcra587/actionlint/actions/workflows/matcher.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/matcher.yaml)
 [![Download script](https://github.com/matcra587/actionlint/actions/workflows/download.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/download.yaml)
 [![Release](https://github.com/matcra587/actionlint/actions/workflows/release.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/release.yaml)
 [![Codecov](https://codecov.io/gh/matcra587/actionlint/graph/badge.svg)](https://codecov.io/gh/matcra587/actionlint)
@@ -166,34 +165,32 @@ mise run fuzz FuzzParse
 
 ## Make a new release
 
-When releasing v1.2.3 as example:
+The [release workflow](.github/workflows/release.yaml) runs for stable `vX.Y.Z` tags. It waits for successful CI and security
+push runs on the tagged commit, then uses GoReleaser to publish release archives, signed GHCR images for Linux AMD64 and
+ARM64, the Homebrew cask in `matcra587/homebrew-tap`, and the Scoop manifest in `matcra587/scoop-bucket`.
+Checksums receive a cosign bundle and GitHub artifact attestation. Container images include SBOMs and build provenance.
 
-1. Ensure all changes were already pushed to remote by checking `git push origin master` outputs `Everything up-to-date`
-2. Run `bash ./scripts/bump-version.bash 1.2.3`
-3. Wait until [the CI release job](.github/workflows/release.yaml) completes successfully:
-   - GoReleaser builds release binaries and make pre-release at GitHub and updates [Homebrew formula](./HomebrewFormula/actionlint.rb)
-   - The CI job also updates version string in `./scripts/download-actionlint.bash`
-4. Open the pre-release at [release page](https://github.com/matcra587/actionlint/releases) with browser
-5. Write up release notes, uncheck pre-release checkbox and publish the new release
-6. Run `mise run changelog` to update [CHANGELOG.md](./CHANGELOG.md) and make a commit for the change. This step requires
+Configure the `deploy` environment with `APP_CLIENT_ID` and `APP_PRIVATE_KEY` for a GitHub App installed on both packaging
+repositories with contents write access. GHCR uses the workflow's `GITHUB_TOKEN`; no Docker Hub token is needed.
+Make the GHCR package public after its first publication so anonymous pulls work.
+
+To release v1.2.3:
+
+1. Complete release preparation on `main`, including the download script's default version until its version selection is
+   updated. Ensure CI and security checks pass.
+2. Run `mise run release:check`. To validate the full package and image build locally, run `mise run release:snapshot`
+   with a Docker Buildx builder supporting Linux AMD64 and ARM64. Snapshot mode does not publish.
+3. Run `bash ./scripts/bump-version.bash 1.2.3`, which pushes the version bump commit and tag.
+4. Wait for the release workflow and update the release notes on the [releases page](https://github.com/matcra587/actionlint/releases).
+5. Run `mise run changelog` and commit the updated [CHANGELOG.md](./CHANGELOG.md). This requires
    [changelog-from-release](https://github.com/rhysd/changelog-from-release).
-7. Run `git pull` to merge upstream changes to local `main` branch and run `git push origin main`
-8. Update the playground by `./playground/deploy.bash` if it is not updated yet for the release
-
-> [!NOTE]
-> If you see workflow failure at releasing a new winget package, check the [fork repository](https://github.com/rhysd/winget-pkgs)
-> is up-to-date. If it is outdated, click 'Sync fork' button to update it to the latest. And re-run the failed job
-> again.
+6. Update the playground with `./playground/deploy.bash` if needed.
 
 ## How to generate the manual
 
-`actionlint.1` manual is generated from [`actionlint.1.ronn`](./man/actionlint.1.ronn) by [ronn](https://github.com/rtomayko/ronn).
-
-```sh
-ronn ./man/actionlint.1.ronn
-```
-
-or
+The manual source is [`man/actionlint.1.md`](./man/actionlint.1.md). The task installs a pinned
+[go-md2man](https://github.com/cpuguy83/go-md2man) to generate `man/actionlint.1` and uses the project's Goldmark dependency
+to generate `man/actionlint.1.html` for the playground. Release archives include the manpage, which the Homebrew cask installs.
 
 ```sh
 mise run docs:man

@@ -17,6 +17,19 @@ alias = "t"
 run = "go test -race ./..."
 run_windows = "go test ./..."
 
+["test:ci"]
+description = "Run shuffled Go tests with coverage and report the results"
+shell = "bash -c"
+usage = '''
+flag "--race <enabled>" default="true" help="Enable the Go race detector" {
+    choices "true" "false"
+}
+'''
+run = [
+    'go test -race="${usage_race?}" -shuffle=on -count=1 -coverprofile=coverage.txt -covermode=atomic ./...',
+    "go tool cover -func ./coverage.txt",
+]
+
 [lint]
 description = "Run Go analysis, vulnerability checks, and documentation checks"
 alias = "l"
@@ -30,6 +43,15 @@ run = [
     "go run ./scripts/check-checks -quiet ./docs/checks.md",
 ]
 run_windows = ["go vet ./...", "staticcheck ./ ./scripts/... ./cmd/...", "govulncheck ./..."]
+
+["lint:shell"]
+description = "Lint repository Bash scripts with ShellCheck"
+run = "shellcheck ./scripts/*.bash ./scripts/generate-actionlint-matcher/*.bash ./playground/*.bash"
+
+["lint:docker"]
+description = "Lint the Dockerfile with Hadolint"
+tools.hadolint = "2.15.1"
+run = "hadolint --ignore DL3018 --strict-labels Dockerfile"
 
 ["lint:wasm"]
 description = "Run staticcheck on the playground Wasm package"
@@ -95,9 +117,35 @@ depends = ["matcher:fixtures"]
 run = "node ./scripts/generate-actionlint-matcher/test.mjs"
 
 ["docs:man"]
-description = "Generate the manual and its HTML version (requires ronn)"
+description = "Generate the manpage and the playground's HTML manual"
 alias = "man"
-run = "ronn ./man/actionlint.1.ronn"
+tools."go:github.com/cpuguy83/go-md2man/v2" = "2.0.7"
+run = [
+    "go-md2man -in man/actionlint.1.md -out man/actionlint.1",
+    "go run ./scripts/generate-man-html man/actionlint.1.md man/actionlint.1.html",
+]
+
+["release:check"]
+description = "Validate the release configuration without publishing"
+tools.goreleaser = "2.18.1"
+run = "goreleaser check"
+
+["release:build"]
+description = "Cross-compile snapshot binaries without publishing"
+tools.goreleaser = "2.18.1"
+run = "goreleaser build --snapshot --clean"
+
+["release:snapshot"]
+description = "Build snapshot archives and local container images without publishing (requires Docker Buildx)"
+tools.goreleaser = "2.18.1"
+depends = ["docs:man"]
+run = "goreleaser release --snapshot --clean --skip=sign"
+
+[release]
+description = "Publish a tagged release (requires packaging tokens and cosign)"
+tools.goreleaser = "2.18.1"
+depends = ["docs:man"]
+run = "goreleaser release --clean"
 
 [changelog]
 description = "Update CHANGELOG.md (requires changelog-from-release)"
@@ -142,6 +190,18 @@ description = "Build the playground and run its tests"
 depends = ["playground:build"]
 dir = "playground"
 run = "npm test"
+
+["playground:ci"]
+description = "Install locked npm dependencies, build, lint, and test the playground"
+dir = "playground"
+run = [
+    "npm ci",
+    "bash ./post-install.bash",
+    "npm run build",
+    { task = "playground:wasm" },
+    "npm run lint",
+    "npm test",
+]
 
 ["playground:lint"]
 description = "Install playground dependencies and run its linters"
