@@ -6,7 +6,7 @@ This script generates [`actionlint-matcher.json`](../../.github/actionlint-match
 ## Usage
 
 ```sh
-make .github/actionlint-matcher.json
+mise run matcher:generate
 ```
 
 or directly run the script
@@ -18,20 +18,12 @@ node ./scripts/generate-actionlint-matcher/main.mjs .github/actionlint-matcher.j
 ## Test
 
 ```sh
-node ./scripts/generate-actionlint-matcher/test.mjs
+mise run matcher:test
 ```
 
 The test uses test data at `./scripts/generate-actionlint-matcher/test/*.txt`. They should be updated when actionlint changes
 the default error message format. To update them:
 
 ```sh
-make ./scripts/generate-actionlint-matcher/test/escape.txt
-make ./scripts/generate-actionlint-matcher/test/no_escape.txt
-make ./scripts/generate-actionlint-matcher/test/want.json
-```
-
-or expand glob by your shell:
-
-```sh
-make ./scripts/generate-actionlint-matcher/test/*
+mise run matcher:fixtures
 ```

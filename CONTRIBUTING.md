@@ -38,7 +38,17 @@ proficient in English.
 
 # Development
 
-`make` (3.81 or later) is useful to run each tasks and reduce redundant builds/tests.
+[mise](https://mise.jdx.dev/) runs the development tasks defined in [`tasks.toml`](./tasks.toml).
+Use mise 2026.9.7 or later. Go, ShellCheck, and pyflakes must be on `PATH`; playground and matcher tasks also require Node.js
+and npm. CI continues to select Go versions independently for its compatibility matrix.
+
+```sh
+mise install --locked hk
+mise tasks
+```
+
+Lint tasks install the versions of staticcheck and govulncheck pinned in `tasks.toml` and recorded in `mise.lock`.
+Go and npm continue to manage project dependencies. Tasks do not use timestamp files to skip tests or lint checks.
 
 ## Git hooks
 
@@ -53,13 +63,12 @@ fi
 mise exec -- hk install --mise
 ```
 
-The pre-push hook runs `make build`, `make test`, `make lint` with `SKIP_GO_GENERATE=true`, then checks the repository's
-workflows with the built actionlint binary. It requires the tools described below, plus ShellCheck and pyflakes on `PATH`.
-Make's built-in rules are disabled in these calls so it does not try to rebuild `.out` test fixtures.
+The pre-push hook runs `mise run build`, `mise run test`, and `mise run lint` in order, then checks the repository's
+workflows with the built actionlint binary. A failure stops subsequent checks.
 The hook skips these checks when `CI` is nonempty, matching the previous hook. Builds no longer install hooks automatically.
 
-Run the same checks manually, including in CI, with `mise exec -- hk check --all`. Checks use the working tree and do not
-stage changes; the existing Makefile targets may update build output and timestamp files.
+Run the same checks manually, including in CI, with `mise run check` or `mise exec -- hk check --all`.
+Checks use the working tree and do not stage changes; builds may update build output.
 
 ## Building
 
@@ -71,17 +80,17 @@ go build ./cmd/actionlint
 or
 
 ```sh
-make build
+mise run build
 ```
 
-`make build` generates some sources with `go generate`. When you want to avoid it, add `SKIP_GO_GENERATE=1` to `make` arguments.
+Builds use the checked-in generated sources. Refresh them explicitly when needed; generation fetches upstream data:
 
 ```sh
-make build SKIP_GO_GENERATE=1
+mise run generate
 ```
 
 Since actionlint doesn't use any cgo features, setting `CGO_ENABLED=0` environment variable is recommended to avoid troubles
-around linking libc. `make build` does this by default.
+around linking libc. `mise run build` does this by default.
 
 ## Testing
 
@@ -101,14 +110,14 @@ go test ./...
 or
 
 ```sh
-make test
+mise run test
 ```
 
 To measure the code coverage
 
 ```sh
 # Generate coverage.html and print the code coverage per functions
-make cov
+mise run coverage
 # See the coverage report in a browser (on macOS)
 open coverage.html
 ```
@@ -130,22 +139,12 @@ Automated tests are as follows.
 
 ## Linting
 
-[staticcheck](https://staticcheck.io/) is used to lint Go sources.
+[staticcheck](https://staticcheck.io/) is used to lint Go sources, and
+[govulncheck](https://go.dev/doc/security/vuln/) is used for security checks. Run them alongside `go vet`, Wasm analysis,
+and documentation checks with:
 
 ```sh
-staticcheck ./...
-```
-
-[govulncheck](https://go.dev/doc/security/vuln/) is used for security checks.
-
-```sh
-govulncheck ./...
-```
-
-These lints can be run with other checks by the following command.
-
-```sh
-make lint
+mise run lint
 ```
 
 ## Fuzzing
@@ -165,7 +164,7 @@ go-fuzz -bin ./actionlint_fuzz-fuzz.zip -func FuzzParse
 or
 
 ```sh
-make fuzz FUZZ_FUNC=FuzzParse
+mise run fuzz FuzzParse
 ```
 
 ## Make a new release
@@ -179,7 +178,7 @@ When releasing v1.2.3 as example:
    - The CI job also updates version string in `./scripts/download-actionlint.bash`
 4. Open the pre-release at [release page](https://github.com/rhysd/actionlint/releases) with browser
 5. Write up release notes, uncheck pre-release checkbox and publish the new release
-6. Run `make CHANGELOG.md` to update [CHANGELOG.md](./CHANGELOG.md) and make a commit for the change. This step requires
+6. Run `mise run changelog` to update [CHANGELOG.md](./CHANGELOG.md) and make a commit for the change. This step requires
    [changelog-from-release](https://github.com/rhysd/changelog-from-release).
 7. Run `git pull` to merge upstream changes to local `main` branch and run `git push origin main`
 8. Update the playground by `./playground/deploy.bash` if it is not updated yet for the release
@@ -200,7 +199,7 @@ ronn ./man/actionlint.1.ronn
 or
 
 ```sh
-make man
+mise run docs:man
 ```
 
 ## How to develop playground

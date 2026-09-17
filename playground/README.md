@@ -4,25 +4,26 @@ Playground for actionlint
 This is a development directory for [actionlint playground](https://rhysd.github.io/actionlint/).
 
 The playground is built with HTML/CSS/TypeScript/Wasm. All dependencies are defined in `package.json` and managed by `npm`.
-Tasks for development are defined in [`Makefile`](./Makefile).
+Tasks for development are defined in [`tasks.toml`](../tasks.toml). Install [mise](https://mise.jdx.dev/), Go, Node.js, and npm
+before running them. Commands work from the repository root or this directory.
 
 ## Tasks
 
 ```sh
-# Install dependencies, build main.wasm, start serving the app at localhost:1234 using Python
-make
+# Install dependencies, build the playground, and serve it at localhost:1234
+mise run playground:serve
 
 # Install dependencies, build main.wasm
-make build
+mise run playground:build
 
 # Install dependencies
-make dep
+mise run playground:deps
 
 # Run tests
-make test
+mise run playground:test
 
-# Clean all built files and dependencies
-make clean
+# Remove main.wasm, index.js, index.js.map, and copied assets; retain node_modules
+mise run playground:clean
 ```
 
 ## Lint
@@ -30,10 +31,10 @@ make clean
 Sources are linted with [eslint](https://eslint.org/) with [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint),
 [prettier](https://prettier.io/) and [stylelint](https://stylelint.io/).
 
-`lint` npm script applies all the liters:
+The `lint` npm script applies all the linters. The mise task first ensures dependencies are installed:
 
 ```sh
-npm run lint
+mise run playground:lint
 ```
 
 ## Deployment

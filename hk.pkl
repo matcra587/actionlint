@@ -2,20 +2,30 @@ amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pk
 
 min_hk_version = "2.0.1"
 
-// Keep the existing Makefile checks and their order, including early failure.
-local projectChecks = new Step {
+local projectStep = new Step {
     exclusive = true
     check = new CommandSpec {
-        command = """
-            set -e
-            make --no-builtin-rules build SKIP_GO_GENERATE=true
-            make --no-builtin-rules test SKIP_GO_GENERATE=true
-            make --no-builtin-rules lint SKIP_GO_GENERATE=true
-            if [ -x ./actionlint ]; then
-                ./actionlint
-            fi
-            """
         effect = "write"
+    }
+}
+
+// Explicit dependencies preserve the existing order and stop after a failure.
+local projectChecks = new Mapping<String, Step> {
+    ["build"] = (projectStep) {
+        check { command = "mise run build" }
+    }
+    ["test"] = (projectStep) {
+        depends = "build"
+        check { command = "mise run test" }
+    }
+    ["lint"] = (projectStep) {
+        depends = "test"
+        check { command = "mise run lint" }
+    }
+    ["workflows"] = (projectStep) {
+        depends = "lint"
+        // The build step already produced the binary for this hook invocation.
+        check { command = "mise run --skip-deps workflows" }
     }
 }
 
@@ -23,13 +33,15 @@ hooks {
     ["pre-push"] {
         stage = false
         steps {
-            ["project"] = (projectChecks) {
-                step_condition = "env('CI') == ''"
+            for (name, step in projectChecks) {
+                [name] = (step) {
+                    step_condition = "env('CI') == ''"
+                }
             }
         }
     }
     ["check"] {
         stage = false
-        steps { ["project"] = projectChecks }
+        steps = projectChecks
     }
 }
