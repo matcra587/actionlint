@@ -350,6 +350,150 @@ func TestLinterLintProject(t *testing.T) {
 	}
 }
 
+func TestLinterSelfRepositoryReferences(t *testing.T) {
+	root := t.TempDir()
+	files := map[string]string{
+		".github/actions/greet/action.yml": `name: Greet
+description: Greet someone
+inputs:
+  name:
+    description: Name
+    required: true
+outputs:
+  greeting:
+    description: Greeting
+runs:
+  using: composite
+  steps:
+    - run: echo hello
+      shell: bash
+`,
+		".github/workflows/reusable.yml": `on:
+  workflow_call:
+    inputs:
+      name:
+        type: string
+        required: true
+    secrets:
+      token:
+        required: true
+    outputs:
+      greeting:
+        value: hello
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
+`,
+	}
+	for name, content := range files {
+		path := filepath.Join(root, filepath.FromSlash(name))
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	const workflow = `on: push
+jobs:
+  call:
+    uses: $/.github/workflows/reusable.yml
+    with:
+      name: World
+    secrets:
+      token: example
+  greet:
+    needs: call
+    runs-on: ubuntu-latest
+    steps:
+      - uses: $/.github/actions/greet
+        id: greet
+        with:
+          name: World
+      - run: echo hello
+        env:
+          ACTION_OUTPUT: ${{ steps.greet.outputs.greeting }}
+          WORKFLOW_OUTPUT: ${{ needs.call.outputs.greeting }}
+`
+	tests := []struct {
+		name  string
+		old   string
+		new   string
+		want  string
+		count int
+	}{
+		{name: "valid"},
+		{
+			name: "action input", old: "          name: World", new: "          unknown: World",
+			want: `input "unknown" is not defined`, count: 2,
+		},
+		{
+			name: "action output", old: "steps.greet.outputs.greeting", new: "steps.greet.outputs.unknown",
+			want: `property "unknown" is not defined`, count: 1,
+		},
+		{
+			name: "workflow input", old: "      name: World", new: "      unknown: World",
+			want: `input "unknown" is not defined`, count: 2,
+		},
+		{
+			name: "workflow input type", old: "      name: World", new: "      name: true",
+			want: `input "name" is typed as string`, count: 1,
+		},
+		{
+			name: "workflow secret", old: "      token: example", new: "      unknown: example",
+			want: `secret "unknown" is not defined`, count: 2,
+		},
+		{
+			name: "workflow output", old: "needs.call.outputs.greeting", new: "needs.call.outputs.unknown",
+			want: `property "unknown" is not defined`, count: 1,
+		},
+		{
+			name: "action ref", old: "uses: $/.github/actions/greet", new: "uses: $/.github/actions/greet@v1",
+			want: `must not include a ref`, count: 1,
+		},
+		{
+			name: "workflow ref", old: "uses: $/.github/workflows/reusable.yml",
+			new: "uses: $/.github/workflows/reusable.yml@v1", want: `must not include a ref`, count: 1,
+		},
+		{
+			name: "missing workflow", old: "uses: $/.github/workflows/reusable.yml",
+			new:  "uses: $/.github/workflows/missing.yml",
+			want: `could not read reusable workflow file for "$/.github/workflows/missing.yml"`, count: 1,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			linter, err := NewLinter(io.Discard, &LinterOptions{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			source := workflow
+			if tc.old != "" {
+				source = strings.Replace(source, tc.old, tc.new, 1)
+			}
+			errs, err := linter.Lint("test.yml", []byte(source), &Project{root: root})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(errs) != tc.count {
+				t.Fatalf("wanted %d errors, got %v", tc.count, errs)
+			}
+			if tc.want == "" {
+				return
+			}
+			for _, err := range errs {
+				if strings.Contains(err.Message, tc.want) {
+					return
+				}
+			}
+			t.Fatalf("wanted error containing %q, got %v", tc.want, errs)
+		})
+	}
+}
+
 func TestLinterFormatErrorMessageOK(t *testing.T) {
 	tests := []struct {
 		file   string

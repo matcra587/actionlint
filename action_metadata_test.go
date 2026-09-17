@@ -190,6 +190,23 @@ func TestLocalActionsFindMetadataOK(t *testing.T) {
 	}
 }
 
+func TestLocalActionsSelfRepositoryMetadata(t *testing.T) {
+	c := NewLocalActionsCache(&Project{root: filepath.Join("testdata", "action_metadata")}, nil)
+	m, cached, err := c.FindMetadata("$/action-yml")
+	if err != nil || m == nil || cached {
+		t.Fatalf("initial lookup: metadata=%v, cached=%v, error=%v", m, cached, err)
+	}
+	other, cached, err := c.FindMetadata("./action-yml")
+	if err != nil || other != m || !cached {
+		t.Fatalf("workspace lookup: metadata=%v, cached=%v, error=%v", other, cached, err)
+	}
+	testDiffActionMetadata(t, testGetWantedActionMetadata(), m)
+	testCheckActionMetadataPath(t, "./action-yml", m)
+	if m, _, err := c.FindMetadata("$/action-yml@v1"); err != nil || m != nil {
+		t.Fatalf("invalid self repository reference: metadata=%v, error=%v", m, err)
+	}
+}
+
 func TestLocalActionsFindConcurrently(t *testing.T) {
 	n := 10
 	proj := &Project{filepath.Join("testdata", "action_metadata"), nil}

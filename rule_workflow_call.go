@@ -52,6 +52,11 @@ func (rule *RuleWorkflowCall) VisitJobPre(n *Job) error {
 		return nil
 	}
 
+	if strings.HasPrefix(u.Value, "$/") && strings.ContainsRune(u.Value, '@') {
+		rule.Errorf(u.Pos, "self repository workflow reference %q must not include a ref", u.Value)
+		return nil
+	}
+
 	if isWorkflowCallUsesLocalFormat(u.Value) {
 		rule.checkWorkflowCallUsesLocal(n.WorkflowCall)
 		return nil
@@ -145,13 +150,13 @@ func (rule *RuleWorkflowCall) checkWorkflowCallUsesLocal(call *WorkflowCall) {
 	rule.Debug("Validated reusable workflow %q", u.Value)
 }
 
-// Parse ./{path/{filename}
+// Parse ./{path}/{filename} or $/{path}/{filename}.
 // https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#calling-a-reusable-workflow
 func isWorkflowCallUsesLocalFormat(u string) bool {
-	if !strings.HasPrefix(u, "./") {
+	if !strings.HasPrefix(u, "./") && !strings.HasPrefix(u, "$/") {
 		return false
 	}
-	u = strings.TrimPrefix(u, "./")
+	u = u[2:]
 
 	// Cannot container a ref
 	idx := strings.IndexRune(u, '@')
@@ -166,7 +171,7 @@ func isWorkflowCallUsesLocalFormat(u string) bool {
 // https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#calling-a-reusable-workflow
 func isWorkflowCallUsesRepoFormat(u string) bool {
 	// Repo reference must start with owner
-	if strings.HasPrefix(u, ".") {
+	if strings.HasPrefix(u, ".") || strings.HasPrefix(u, "$/") {
 		return false
 	}
 

@@ -19,6 +19,10 @@ func TestRuleWorkflowCallCheckWorkflowCallUsesFormat(t *testing.T) {
 		{"owner/repo/x.yml@@", true},
 		{"owner/repo/x.yml@release/v1", true},
 		{"./path/to/x.yml", true},
+		{"$/.github/workflows/x.yml", true},
+		{"$/.github/workflows/x.yml@ref", false},
+		{"$/@ref", false},
+		{"$/", false},
 		{"${{ env.FOO }}", true},
 		{"./path/to/x.yml@ref", false},
 		{"/path/to/x.yml@ref", false},
@@ -138,6 +142,9 @@ func TestRuleWorkflowCallWriteEventNodeToMetadataCache(t *testing.T) {
 	m, ok := c.readCache("./test-workflow.yaml")
 	if !ok {
 		t.Fatal("no metadata was created")
+	}
+	if self, err := c.FindMetadata("$/test-workflow.yaml"); err != nil || self != m {
+		t.Fatalf("self repository reference did not reuse cached metadata: metadata=%v, error=%v", self, err)
 	}
 
 	want := &ReusableWorkflowMetadata{
