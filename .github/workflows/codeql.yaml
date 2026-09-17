@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: read
       security-events: write # Upload scanner results to code scanning.
-    uses: matcra587/github-actions/.github/workflows/security.yml@298f23ea9730fdeb69e2a40c4240119be2964464
+    uses: matcra587/github-actions/.github/workflows/security.yml@d2ae464e93461998e97ebc72c4f3de40ac0a84df # security/v0.4.3
     with:
       # CI tests the fork's own actionlint; local CodeQL jobs preserve testdata exclusions.
       skip: actionlint codeql
