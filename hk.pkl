@@ -1,0 +1,35 @@
+amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pkl"
+
+min_hk_version = "2.0.1"
+
+// Keep the existing Makefile checks and their order, including early failure.
+local projectChecks = new Step {
+    exclusive = true
+    check = new CommandSpec {
+        command = """
+            set -e
+            make --no-builtin-rules build SKIP_GO_GENERATE=true
+            make --no-builtin-rules test SKIP_GO_GENERATE=true
+            make --no-builtin-rules lint SKIP_GO_GENERATE=true
+            if [ -x ./actionlint ]; then
+                ./actionlint
+            fi
+            """
+        effect = "write"
+    }
+}
+
+hooks {
+    ["pre-push"] {
+        stage = false
+        steps {
+            ["project"] = (projectChecks) {
+                step_condition = "env('CI') == ''"
+            }
+        }
+    }
+    ["check"] {
+        stage = false
+        steps { ["project"] = projectChecks }
+    }
+}
