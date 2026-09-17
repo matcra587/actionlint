@@ -84,12 +84,11 @@ test.yaml:22:17: receiver of object dereference "permissions" must be type of ob
 
 ## Quick start
 
-Install `actionlint` command by downloading [the released binary][releases] or by Homebrew or by `go install`. See
-[the installation document][install] for more details like how to manage the command with several package managers
-or run via Docker container.
+Install this fork from the main branch with `go install`. Fork releases are not yet available; package manager
+packages currently install upstream actionlint. See [the installation document][install] for details.
 
 ```sh
-go install github.com/rhysd/actionlint/cmd/actionlint@latest
+go install github.com/matcra587/actionlint/cmd/actionlint@main
 ```
 
 Basically all you need to do is run the `actionlint` command in your repository. actionlint automatically detects workflows and
@@ -127,22 +126,22 @@ See the [contribution guide](./CONTRIBUTING.md) for more details.
 
 actionlint is distributed under [the MIT license](./LICENSE.txt).
 
-[ci-badge]: https://github.com/rhysd/actionlint/actions/workflows/ci.yaml/badge.svg
-[ci]: https://github.com/rhysd/actionlint/actions/workflows/ci.yaml
-[apidoc-badge]: https://pkg.go.dev/badge/github.com/rhysd/actionlint.svg
-[apidoc]: https://pkg.go.dev/github.com/rhysd/actionlint
-[repo]: https://github.com/rhysd/actionlint
-[playground]: https://rhysd.github.io/actionlint/
+[ci-badge]: https://github.com/matcra587/actionlint/actions/workflows/ci.yaml/badge.svg
+[ci]: https://github.com/matcra587/actionlint/actions/workflows/ci.yaml
+[apidoc-badge]: https://pkg.go.dev/badge/github.com/matcra587/actionlint.svg
+[apidoc]: https://pkg.go.dev/github.com/matcra587/actionlint
+[repo]: https://github.com/matcra587/actionlint
+[playground]: https://matcra587.github.io/actionlint/
 [shellcheck]: https://github.com/koalaman/shellcheck
 [pyflakes]: https://github.com/PyCQA/pyflakes
 [syntax-doc]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 [filter-pattern-doc]: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
 [script-injection-doc]: https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
-[releases]: https://github.com/rhysd/actionlint/releases
-[checks]: https://github.com/rhysd/actionlint/blob/v1.7.12/docs/checks.md
-[install]: https://github.com/rhysd/actionlint/blob/v1.7.12/docs/install.md
-[usage]: https://github.com/rhysd/actionlint/blob/v1.7.12/docs/usage.md
-[config]: https://github.com/rhysd/actionlint/blob/v1.7.12/docs/config.md
-[api]: https://github.com/rhysd/actionlint/blob/v1.7.12/docs/api.md
-[refs]: https://github.com/rhysd/actionlint/blob/v1.7.12/docs/reference.md
-[issue-form]: https://github.com/rhysd/actionlint/issues/new
+[releases]: https://github.com/matcra587/actionlint/releases
+[checks]: https://github.com/matcra587/actionlint/blob/main/docs/checks.md
+[install]: https://github.com/matcra587/actionlint/blob/main/docs/install.md
+[usage]: https://github.com/matcra587/actionlint/blob/main/docs/usage.md
+[config]: https://github.com/matcra587/actionlint/blob/main/docs/config.md
+[api]: https://github.com/matcra587/actionlint/blob/main/docs/api.md
+[refs]: https://github.com/matcra587/actionlint/blob/main/docs/reference.md
+[issue-form]: https://github.com/matcra587/actionlint/issues/new

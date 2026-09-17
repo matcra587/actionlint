@@ -13,7 +13,7 @@ outputs:
 
 runs:
   using: 'docker'
-  image: 'ghcr.io/rhysd/actionlint:latest'
+  image: 'ghcr.io/matcra587/actionlint:latest'
   args:
     - ${{ inputs.foo }}
     - ${{ inputs.bar }}

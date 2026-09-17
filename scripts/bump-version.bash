@@ -45,7 +45,7 @@ function sed_() {
 pre_commit_hook='./.pre-commit-hooks.yaml'
 usage_doc='./docs/usage.md'
 tag="v${version}"
-job_url='https://github.com/rhysd/actionlint/actions/workflows/release.yaml'
+job_url='https://github.com/matcra587/actionlint/actions/workflows/release.yaml'
 playground_html='./playground/index.html'
 readme_doc='./README.md'
 man_ronn='./man/actionlint.1.ronn'
@@ -54,7 +54,7 @@ echo "Bumping up version to ${version} (tag: ${tag})"
 
 # Update container image tag in pre-commit hook (See #116 for more details)
 echo "Updating $pre_commit_hook"
-sed_ "s/entry: docker\\.io\\/rhysd\\/actionlint:.*/entry: docker.io\\/rhysd\\/actionlint:${version}/" "$pre_commit_hook"
+sed_ "s/entry: docker\\.io\\/matcra587\\/actionlint:.*/entry: docker.io\\/matcra587\\/actionlint:${version}/" "$pre_commit_hook"
 
 echo "Updating $usage_doc"
 sed_ "\
@@ -65,13 +65,13 @@ sed_ "\
 
 echo "Updating $playground_html"
 sed_ "\
-    s/rhysd\/actionlint\/releases\/tag\/v[0-9]+\.[0-9]+\.[0-9]+/rhysd\/actionlint\/releases\/tag\/v${version}/; \
+    s/(rhysd|matcra587)\/actionlint\/releases\/tag\/v[0-9]+\.[0-9]+\.[0-9]+/matcra587\/actionlint\/releases\/tag\/v${version}/; \
     s/id=\"version\">v[0-9]+\.[0-9]+\.[0-9]+/id=\"version\">v${version}/; \
     " "$playground_html"
 
 for f in "$readme_doc" "$man_ronn" "$playground_html"; do
     echo "Updating document links in $f"
-    sed_ "s/\/rhysd\/actionlint\/blob\/v[0-9]+\.[0-9]+\.[0-9]+\/docs\//\/rhysd\/actionlint\/blob\/v${version}\/docs\//g" "$f"
+    sed_ "s/\/matcra587\/actionlint\/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs\//\/matcra587\/actionlint\/blob\/v${version}\/docs\//g" "$f"
 done
 
 echo 'Creating a version bump commit and a version tag'

@@ -4,4 +4,4 @@ description: 'Correct Docker action'
 
 runs:
   using: 'docker'
-  image: 'docker.io/rhysd/actionlint:latest'
+  image: 'docker.io/matcra587/actionlint:latest'

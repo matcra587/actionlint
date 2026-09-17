@@ -5,7 +5,7 @@ package actionlint_fuzz
 import (
 	"unicode/utf8"
 
-	"github.com/rhysd/actionlint"
+	"github.com/matcra587/actionlint"
 )
 
 func FuzzExprParse(data []byte) int {
