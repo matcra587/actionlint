@@ -1,4 +1,4 @@
-name: CodeQL
+name: Security
 
 on:
   push:
@@ -6,59 +6,87 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    # Every Saturday 6:41 in JST
     - cron: '41 21 * * 5'
   workflow_dispatch:
 
-permissions:
-  security-events: write
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'push' && github.sha || github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  security:
+    name: Security checks
+    permissions:
+      contents: read
+      security-events: write # Upload scanner results to code scanning.
+    uses: matcra587/github-actions/.github/workflows/security.yml@09a32f29285295a6b9f604ed98098ea409b899b4 # security/v0.4.2
+    with:
+      # CI tests the fork's own actionlint; local CodeQL jobs preserve testdata exclusions.
+      skip: actionlint codeql
+      sarif: true
+      zizmor-min-severity: low
+
   analyze-go:
     name: Analyze Go
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write # Upload Go CodeQL results.
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
+      - name: Checkout
+        # @clover: constraint=major tags=checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        # @clover: constraint=major tags=setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: '1.26'
           check-latest: true
-      - uses: github/codeql-action/init@v4
+      - name: Initialize CodeQL
+        # @clover: constraint=major tags=codeql-action
+        uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         with:
           config-file: ./.github/codeql/codeql-config.yaml
           languages: go
+          build-mode: manual
       - name: Build Go sources
         run: |
-          set -x
           go build -v ./cmd/actionlint
           GOOS=js GOARCH=wasm go build -v -o ./playground/main.wasm ./playground
-      - uses: github/codeql-action/analyze@v4
+      - name: Analyze
+        # @clover: constraint=major tags=codeql-action
+        uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         with:
-          category: "/language:go"
+          category: /language:go
+
   analyze-ts:
     name: Analyze TypeScript
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./playground
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write # Upload TypeScript CodeQL results.
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - name: Checkout
+        # @clover: constraint=major tags=checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: "lts/*"
-          cache: npm
-          cache-dependency-path: ./playground/package-lock.json
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
-        with:
-          version: '2026.9.10'
-          install: false
-      - uses: github/codeql-action/init@v4
+          persist-credentials: false
+      - name: Initialize CodeQL
+        # @clover: constraint=major tags=codeql-action
+        uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         with:
           config-file: ./.github/codeql/codeql-config.yaml
           languages: javascript-typescript
+          build-mode: none
           source-root: ./playground
-      - name: Build playground
-        run: mise run playground:build
-      - uses: github/codeql-action/analyze@v4
+      - name: Analyze
+        # @clover: constraint=major tags=codeql-action
+        uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         with:
-          category: "/language:javascript-typescript"
+          category: /language:javascript-typescript

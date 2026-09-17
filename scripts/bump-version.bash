@@ -48,13 +48,13 @@ tag="v${version}"
 job_url='https://github.com/matcra587/actionlint/actions/workflows/release.yaml'
 playground_html='./playground/index.html'
 readme_doc='./README.md'
-man_ronn='./man/actionlint.1.ronn'
+man_markdown='./man/actionlint.1.md'
 
 echo "Bumping up version to ${version} (tag: ${tag})"
 
 # Update container image tag in pre-commit hook (See #116 for more details)
 echo "Updating $pre_commit_hook"
-sed_ "s/entry: docker\\.io\\/matcra587\\/actionlint:.*/entry: docker.io\\/matcra587\\/actionlint:${version}/" "$pre_commit_hook"
+sed_ "s|entry: ghcr\\.io/matcra587/actionlint:.*|entry: ghcr.io/matcra587/actionlint:${version}|" "$pre_commit_hook"
 
 echo "Updating $usage_doc"
 sed_ "\
@@ -69,17 +69,17 @@ sed_ "\
     s/id=\"version\">v[0-9]+\.[0-9]+\.[0-9]+/id=\"version\">v${version}/; \
     " "$playground_html"
 
-for f in "$readme_doc" "$man_ronn" "$playground_html"; do
+for f in "$readme_doc" "$man_markdown" "$playground_html"; do
     echo "Updating document links in $f"
     sed_ "s/\/matcra587\/actionlint\/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs\//\/matcra587\/actionlint\/blob\/v${version}\/docs\//g" "$f"
 done
 
 echo 'Creating a version bump commit and a version tag'
-git add "$pre_commit_hook" "$usage_doc" "$playground_html" "$readme_doc" "$man_ronn"
+git add "$pre_commit_hook" "$usage_doc" "$playground_html" "$readme_doc" "$man_markdown"
 git commit -m "bump up version to ${tag}"
 git tag "$tag"
 
-# This is necessary since docker/build-push-action assumes the tagged commit was also pushed to main branch
+# The release workflow waits for successful checks on this commit's main-branch push.
 echo "Pushing bump commit to main"
 git push origin main
 

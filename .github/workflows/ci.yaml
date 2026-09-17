@@ -1,140 +1,191 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+# Keep every main-branch run available to the release gate.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'push' && github.sha || github.ref }}
+  cancel-in-progress: true
+
+env:
+  MISE_LOCKED: '1'
+  # Hooks run locally; hk has no Intel macOS binary for this test matrix.
+  MISE_DISABLE_TOOLS: hk
 
 jobs:
   unit-tests:
     name: Unit tests
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest, macos-26-intel, windows-11-arm]
         go: ['1.25', '1.26']
-    runs-on: ${{ matrix.os }}
     steps:
-      - name: Install dependencies on macOS
-        run: |
-          set -x
-          brew install --quiet shellcheck python3 pipx
-          # https://pipx.pypa.io/stable/installation/
-          pipx ensurepath
-          pipx install pyflakes
-          shellcheck --version
-          pyflakes --version
-        if: ${{ runner.os == 'macOS' }}
-      - name: Install dependencies on Linux
-        run: |
-          set -x
-          sudo apt-get install -y shellcheck
-          pip install pyflakes
-          shellcheck --version
-          pyflakes --version
-        if: ${{ runner.os == 'Linux' }}
-      - name: Install dependencies on Windows
-        run: |
-          winget install --id koalaman.shellcheck --disable-interactivity --accept-package-agreements --accept-source-agreements
-          pip install pyflakes
-          pyflakes --version
-        if: ${{ runner.os == 'Windows' }}
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
+      - name: Preserve fixture line endings
+        run: git config --global core.autocrlf input
+      - name: Checkout
+        # @clover: constraint=major tags=checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        # @clover: constraint=major tags=setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ matrix.go }}
           check-latest: true
-      - run: go test -v -race -coverprofile coverage.txt -covermode=atomic ./...
-        # Arm Windows doesn't support -race
-        if: ${{ matrix.os != 'windows-11-arm' }}
-      - run: go test -v -coverprofile coverage.txt -covermode=atomic ./...
-        if: ${{ matrix.os == 'windows-11-arm' }}
-      - run: go tool cover -func ./coverage.txt
-      # Check build without CGO
-      - run: go build ./cmd/actionlint
-        env:
-          # Note: -race requires cgo
-          CGO_ENABLED: 0
-      # Set -race for catching data races on dog fooding (#333)
-      - run: go build -race ./cmd/actionlint
-        if: ${{ matrix.os != 'windows-11-arm' }}
-      - name: Dog fooding 🐶
+      - uses: $/.github/actions/setup-linters
+      - name: Download and verify dependencies
         run: |
-          echo "::add-matcher::.github/actionlint-matcher.json"
+          go mod download
+          go mod verify
+      - name: Test and report coverage
+        env:
+          RACE_ENABLED: ${{ matrix.os != 'windows-11-arm' }}
+        run: mise run test:ci --race="$RACE_ENABLED"
+      - name: Build without CGO
+        run: mise run build
+      - name: Build with race detection for workflow checks
+        if: matrix.os != 'windows-11-arm'
+        run: go build -race ./cmd/actionlint
+      - name: Check this repository's workflows
+        run: |
+          echo '::add-matcher::.github/actionlint-matcher.json'
           ./actionlint -color
-      - uses: codecov/codecov-action@v6
+      - name: Upload coverage
+        # @clover: constraint=major tags=codecov-action
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
-          env_vars: OS
+          files: coverage.txt
+          env_vars: OS,GO_VERSION
           token: ${{ secrets.CODECOV_TOKEN }}
         env:
           OS: ${{ matrix.os }}
+          GO_VERSION: ${{ matrix.go }}
+
   wasm:
     name: Wasm
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./playground
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
+      - name: Checkout
+        # @clover: constraint=major tags=checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        # @clover: constraint=major tags=setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: '1.26'
           check-latest: true
-      - uses: actions/setup-node@v6
+      - name: Set up Node
+        # @clover: constraint=major tags=setup-node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "lts/*"
+          node-version: '24'
           cache: npm
-          cache-dependency-path: ./playground/package-lock.json
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
-        with:
-          version: '2026.9.10'
-          install: false
-      - name: Build playground
-        run: mise run playground:build
-      - name: Lint playground
-        run: npm run lint
-      - name: Run tests for wasm
-        run: npm test
+          cache-dependency-path: playground/package-lock.json
+      - uses: $/.github/actions/setup-linters
+      - name: Build, lint and test the playground
+        run: mise run playground:ci
+      - name: Test problem matchers
+        run: mise run matcher:test
+      - name: Check generated matcher and fixture drift
+        run: |
+          mise run matcher:generate
+          git diff --exit-code -- .github/actionlint-matcher.json scripts/generate-actionlint-matcher
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
+      - name: Checkout
+        # @clover: constraint=major tags=checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Go
+        # @clover: constraint=major tags=setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: '1.26'
           check-latest: true
-      - name: Install dependencies
+      - uses: $/.github/actions/setup-linters
+      - name: Check Go formatting
+        shell: bash
         run: |
-          sudo apt-get install -y shellcheck
-          pip install pyflakes
-          shellcheck --version
-          pyflakes --version
-      - name: Check Go sources are formatted
-        run: |
-          diffs="$(gofmt -d ./*.go ./cmd/actionlint/*.go ./scripts/*/*.go ./playground/*.go)"
-          if [[ "$diffs" != "" ]]; then
+          diffs="$(gofmt -l ./*.go ./cmd/actionlint/*.go ./scripts/*/*.go ./playground/*.go)"
+          if [[ -n "$diffs" ]]; then
             echo "$diffs" >&2
             exit 1
           fi
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
-        with:
-          version: '2026.9.10'
-          install_args: --locked --include-task-tools
-      - run: mise run lint
-      - name: Lint bash scripts
-        run: shellcheck ./scripts/*.bash ./scripts/generate-actionlint-matcher/*.bash ./playground/*.bash
+      - name: Check module tidiness
+        run: go mod tidy -diff
+      - name: Run Go and documentation checks
+        run: mise run lint
+      - name: Lint shell scripts
+        run: mise run lint:shell
+      - name: Validate release configuration
+        run: mise run release:check
+
   docker:
     name: Dockerfile
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
-      - name: Build image
-        id: image
-        uses: docker/build-push-action@v7
+      - name: Checkout
+        # @clover: constraint=major tags=checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          build-args: |
-            GOLANG_VER=1.26
-          push: false
-      - name: Test Docker image
-        run: docker container run
-          --mount type=bind,source="$(pwd)",target=/mnt/app
-          --workdir /mnt/app
-          -- ${{ steps.image.outputs.digest }} -color -verbose
-      - name: Lint Dockerfile with hadolint
-        run: docker run --rm -i hadolint/hadolint hadolint --ignore DL3018 --strict-labels - < Dockerfile
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Go
+        # @clover: constraint=major tags=setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.26'
+          check-latest: true
+      - name: Install mise tools
+        # @clover: constraint=major tags=mise-action
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        with:
+          version: '2026.9.10'
+          install_args: --locked
+          github_token: ${{ github.token }}
+      - name: Set up QEMU
+        # @clover: constraint=major tags=setup-qemu-action
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - name: Set up Buildx
+        # @clover: constraint=major tags=setup-buildx-action
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build release snapshot and container images
+        run: mise run release:snapshot
+      - name: Smoke-test image
+        run: |
+          version="$(jq -r .version dist/metadata.json)"
+          image="ghcr.io/matcra587/actionlint:${version}-amd64"
+          docker run --rm "$image" -version
+          docker run --rm --mount "type=bind,source=$PWD,target=/mnt/app,readonly" --workdir /mnt/app "$image" -color -verbose
+      - name: Lint Dockerfile
+        run: mise run lint:docker

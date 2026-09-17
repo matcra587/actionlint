@@ -1,0 +1,27 @@
+name: Set up external linters
+description: Install the ShellCheck and Pyflakes versions used by actionlint tests
+
+runs:
+  using: composite
+  steps:
+    - name: Install mise tools
+      # @clover: constraint=major tags=mise-action
+      uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      with:
+        version: '2026.9.10'
+        install_args: --locked
+        github_token: ${{ github.token }}
+    - name: Set up uv
+      # @clover: constraint=major tags=setup-uv
+      uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+      with:
+        python-version: '3.14'
+        cache-dependency-glob: .github/actions/setup-linters/action.yml
+    - name: Install Pyflakes
+      shell: bash
+      run: uv tool install pyflakes==3.4.0
+    - name: Check external linters
+      shell: bash
+      run: |
+        shellcheck --version
+        pyflakes --version
