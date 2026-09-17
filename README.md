@@ -5,6 +5,9 @@ actionlint
 
 [actionlint][repo] is a static checker for GitHub Actions workflow files. [Try it online!][playground]
 
+This fork is maintained by [@matcra587](https://github.com/matcra587). The original
+[actionlint project](https://github.com/rhysd/actionlint) was created by [@rhysd](https://github.com/rhysd).
+
 Features:
 
 - **Syntax check for workflow files** to check unexpected or missing keys following [workflow syntax][syntax-doc]

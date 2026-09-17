@@ -33,9 +33,6 @@ Before submitting your PR, please ensure the following points:
 - If you added a new public API, consider to add tests and a doc comment for the API.
 - If you updated [the checks document](docs/checks.md), ensure to run [the maintenance script](#about-checks-doc).
 
-Special thanks to the native English speakers for proofreading the documentation and error messages, as the author is not
-proficient in English.
-
 # Development
 
 [mise](https://mise.jdx.dev/) runs the development tasks defined in [`tasks.toml`](./tasks.toml).
