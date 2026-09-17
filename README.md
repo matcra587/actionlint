@@ -147,4 +147,4 @@ actionlint is distributed under [the MIT license](./LICENSE.txt).
 [config]: https://github.com/matcra587/actionlint/blob/main/docs/config.md
 [api]: https://github.com/matcra587/actionlint/blob/main/docs/api.md
 [refs]: https://github.com/matcra587/actionlint/blob/main/docs/reference.md
-[issue-form]: https://github.com/matcra587/actionlint/issues/new
+[issue-form]: https://github.com/matcra587/actionlint/issues/new/choose

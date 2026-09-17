@@ -1,0 +1,12 @@
+---
+name: Question
+description: Ask about usage, diagnostics or supported GitHub Actions syntax
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: What's the question?
+      description: Include a workflow example and your actionlint version where relevant.
+    validations:
+      required: true

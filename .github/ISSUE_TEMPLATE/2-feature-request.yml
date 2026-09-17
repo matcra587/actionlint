@@ -1,0 +1,31 @@
+---
+name: Feature request
+description: Propose a new check, GitHub Actions syntax support or another improvement
+title: "[proposal]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read the [feature policy](https://github.com/matcra587/actionlint/blob/main/CONTRIBUTING.md#policy-for-actionlints-features) before proposing a change.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What mistake or unsupported behaviour should actionlint handle?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behaviour
+      description: Describe the expected check or improvement and include an example workflow where useful.
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Link to relevant GitHub Actions documentation, changelog entries or related issues.
+    validations:
+      required: false

@@ -1,0 +1,50 @@
+---
+name: Bug report
+description: Report an incorrect diagnostic, missed error or crash
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: version
+    attributes:
+      label: actionlint version
+      description: Paste `actionlint -version` output. If it cannot start, give the version you installed; for the browser version, give the playground URL.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system and installation method, such as a release binary, Homebrew, Docker or a source build. For the playground, include your browser and version.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the exact command and any actionlint configuration needed to reproduce the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Reproducible workflow
+      description: Paste a minimal complete workflow and any referenced local actions or reusable workflows. For installation problems, this can be left blank.
+      render: yaml
+    validations:
+      required: false
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Include the diagnostic output or crash message.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: Explain what should happen. A link to relevant GitHub Actions documentation is helpful.
+    validations:
+      required: true
