@@ -40,6 +40,27 @@ proficient in English.
 
 `make` (3.81 or later) is useful to run each tasks and reduce redundant builds/tests.
 
+## Git hooks
+
+Install [hk](https://hk.jdx.dev/) using the version pinned in `mise.toml`, then enable the repository's hooks:
+
+```sh
+mise install hk
+# Remove the old hook path if this checkout used .git-hooks.
+if [ "$(git config --local --get core.hooksPath)" = .git-hooks ]; then
+    git config --local --unset core.hooksPath
+fi
+mise exec -- hk install --mise
+```
+
+The pre-push hook runs `make build`, `make test`, `make lint` with `SKIP_GO_GENERATE=true`, then checks the repository's
+workflows with the built actionlint binary. It requires the tools described below, plus ShellCheck and pyflakes on `PATH`.
+Make's built-in rules are disabled in these calls so it does not try to rebuild `.out` test fixtures.
+The hook skips these checks when `CI` is nonempty, matching the previous hook. Builds no longer install hooks automatically.
+
+Run the same checks manually, including in CI, with `mise exec -- hk check --all`. Checks use the working tree and do not
+stage changes; the existing Makefile targets may update build output and timestamp files.
+
 ## Building
 
 ```sh
