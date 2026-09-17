@@ -174,7 +174,7 @@ type LocalReusableWorkflowCache struct {
 	dbg   io.Writer
 }
 
-func (c *LocalReusableWorkflowCache) debug(format string, args ...interface{}) {
+func (c *LocalReusableWorkflowCache) debug(format string, args ...any) {
 	if c.dbg == nil {
 		return
 	}

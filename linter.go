@@ -199,7 +199,7 @@ func NewLinter(out io.Writer, opts *LinterOptions) (*Linter, error) {
 	return l, nil
 }
 
-func (l *Linter) log(args ...interface{}) {
+func (l *Linter) log(args ...any) {
 	if l.logLevel < LogLevelVerbose {
 		return
 	}
@@ -207,7 +207,7 @@ func (l *Linter) log(args ...interface{}) {
 	fmt.Fprintln(l.logOut, args...)
 }
 
-func (l *Linter) debug(format string, args ...interface{}) {
+func (l *Linter) debug(format string, args ...any) {
 	if l.logLevel < LogLevelDebug {
 		return
 	}

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -73,10 +74,8 @@ func (sc switchCases) ForEach(pred func(c *switchCase)) {
 
 func (sc switchCases) Contains(key string) bool {
 	for _, sw := range sc {
-		for _, k := range sw.cond {
-			if k == key {
-				return true
-			}
+		if slices.Contains(sw.cond, key) {
+			return true
 		}
 	}
 	return false

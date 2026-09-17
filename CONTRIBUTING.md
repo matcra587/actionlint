@@ -69,6 +69,8 @@ Checks use the working tree and do not stage changes; builds may update build ou
 
 ## Building
 
+Go 1.27.1 or newer is required. `mise install --locked` installs the pinned development toolchain.
+
 ```sh
 go build ./cmd/actionlint
 ./actionlint -h
@@ -90,6 +92,8 @@ Since actionlint doesn't use any cgo features, setting `CGO_ENABLED=0` environme
 around linking libc. `mise run build` does this by default.
 
 ## Testing
+
+Run `mise run security` to check Go code with the pinned govulncheck version. The lint task also runs this check.
 
 [![CI](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml)
 [![Generate](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml)

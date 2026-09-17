@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
@@ -168,10 +169,8 @@ func (u *Updater) Scan() bool {
 }
 
 func (u *Updater) expect(states ...state) {
-	for _, s := range states {
-		if s == u.cur {
-			return
-		}
+	if slices.Contains(states, u.cur) {
+		return
 	}
 	u.err(fmt.Errorf("unexpected state %q. expected %q", u.cur, states))
 }

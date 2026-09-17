@@ -2,6 +2,7 @@ package actionlint
 
 import (
 	"fmt"
+	"maps"
 	"sort"
 	"strings"
 )
@@ -337,9 +338,7 @@ func (ty *ObjectType) Merge(other ExprType) ExprType {
 		}
 
 		props := make(map[string]ExprType, len(ty.Props))
-		for n, l := range ty.Props {
-			props[n] = l
-		}
+		maps.Copy(props, ty.Props)
 		for n, r := range other.Props {
 			if l, ok := props[n]; ok {
 				props[n] = l.Merge(r)

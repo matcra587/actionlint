@@ -133,7 +133,7 @@ func attr(n *html.Node, name string) string {
 }
 
 func hasClass(n *html.Node, want string) bool {
-	for _, c := range strings.Fields(attr(n, "class")) {
+	for c := range strings.FieldsSeq(attr(n, "class")) {
 		if c == want {
 			return true
 		}

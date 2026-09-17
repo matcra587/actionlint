@@ -78,12 +78,12 @@ func (p *parser) errorAt(pos *Pos, m string) {
 	p.errors = append(p.errors, &Error{m, "", pos.Line, pos.Col, "syntax-check"})
 }
 
-func (p *parser) errorfAt(pos *Pos, format string, args ...interface{}) {
+func (p *parser) errorfAt(pos *Pos, format string, args ...any) {
 	m := fmt.Sprintf(format, args...)
 	p.errorAt(pos, m)
 }
 
-func (p *parser) errorf(n *yaml.Node, format string, args ...interface{}) {
+func (p *parser) errorf(n *yaml.Node, format string, args ...any) {
 	m := fmt.Sprintf(format, args...)
 	p.error(n, m)
 }

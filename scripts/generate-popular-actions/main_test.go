@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -463,11 +464,29 @@ func TestInvalidCommandArgs(t *testing.T) {
 	}
 }
 
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
+	return f(r)
+}
+
 func TestDetectErrorBadRequest(t *testing.T) {
 	stdout := io.Discard
 	stderr := &bytes.Buffer{}
 	f := filepath.Join("testdata", "registry", "empty_slug.json")
-	status := newGen(stdout, stderr, io.Discard).run([]string{"test", "-d", "-r", f})
+	g := newGen(stdout, stderr, io.Discard)
+	g.client = &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		if r.Method != http.MethodHead || r.URL.String() != "https://raw.githubusercontent.com//v2/action.yml" {
+			t.Errorf("unexpected request: %s %s", r.Method, r.URL)
+		}
+		return &http.Response{
+			StatusCode: http.StatusBadRequest,
+			Status:     "400 Bad Request",
+			Body:       http.NoBody,
+			Request:    r,
+		}, nil
+	})}
+	status := g.run([]string{"test", "-d", "-r", f})
 	if status != 1 {
 		t.Fatal("exit status is not 1:", status)
 	}
