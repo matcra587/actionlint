@@ -1751,13 +1751,19 @@ test.yaml:13:15: specifying action ".github/my-actions/do-something" in invalid 
 
 [Playground](https://rhysd.github.io/actionlint/#eNpczbEOwyAMBNA9X+EtE0XqyNRfAWIBTbGj2K7Uv69olYXppHsnHVOAw6QuT04SFgBF0ZEAp5G44ZaM1NwrDvuRKB7yXwE4MEEJELM2JvG5Yt7ZdOKrfrzvk6wb5x3P4H3rsWBYJ7+VptWS7x93fWzshDtqbVS+AQAA//+oTjwo)
 
-Action needs to be specified in a format defined in [the document][action-uses-doc]. There are 3 types of actions:
+Action needs to be specified in a format defined in [the document][action-uses-doc]. Supported formats are:
 
 - action hosted on GitHub: `owner/repo/path@ref`
+- action in the same repository at the running commit: `$/path/to/my-action`
 - local action: `./path/to/my-action`
 - Docker action: `docker://image:tag`
 
 actionlint checks values at `uses:` sections follow one of these formats.
+
+The `$/` self repository reference resolves against the repository of the workflow containing it, at the running commit.
+It does not require a checkout step and must not include an `@ref` suffix. GitHub recommends it for actions in the same
+repository. This syntax is not available on GitHub Enterprise Server. actionlint uses the repository being linted to
+validate the action's metadata, inputs, and outputs.
 
 Note that actionlint does not report any error when a directory for a local action does not exist in the repository because it is
 a common case where the action is managed in a separate repository and the action directory is cloned at running the workflow.
@@ -2285,10 +2291,12 @@ For example, `secrets:` is not available when running steps in a normal job. And
 a reusable workflow since the called workflow determines which OS is used. actionlint checks such keys are used correctly
 to call a reusable workflow or to run steps in a normal job.
 
-And the workflow syntax at `uses:` must follow the format `owner/repo/path/to/workflow.yml@ref` as described in
-[the official document][create-reusable-workflow-doc]. actionlint checks if the value follows the format.
+The workflow syntax at `uses:` must follow the format `owner/repo/path/to/workflow.yml@ref`,
+`./.github/workflows/workflow.yml`, or `$/.github/workflows/workflow.yml` as described in
+[the official document][create-reusable-workflow-doc]. Both same-repository forms use the caller's commit and must not
+include an `@ref` suffix. The `$/` form is not available on GitHub Enterprise Server.
 
-actionlint also validates the called workflow file is actually existing when it is a local workflow (starting with `./`).
+actionlint also validates the called workflow file is actually existing when it is a local workflow (starting with `./` or `$/`).
 actionlint reports an error when it does not exist.
 
 ### Check types of `inputs.*` and `secrets.*` in reusable workflow

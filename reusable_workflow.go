@@ -196,7 +196,7 @@ func (c *LocalReusableWorkflowCache) writeCache(key string, val *ReusableWorkflo
 }
 
 // FindMetadata finds/parses a reusable workflow metadata located by the 'spec' argument. When project
-// is not set to 'proj' field or the spec does not start with "./", this method immediately returns with nil.
+// is not set to 'proj' field or the spec does not start with "./" or "$/", this method immediately returns with nil.
 //
 // Note that an error is not cached. At first search, let's say this method returned an error since
 // the reusable workflow is invalid. In this case, calling this method with the same spec later will
@@ -205,31 +205,38 @@ func (c *LocalReusableWorkflowCache) writeCache(key string, val *ReusableWorkflo
 //
 // Calling this method is thread-safe.
 func (c *LocalReusableWorkflowCache) FindMetadata(spec string) (*ReusableWorkflowMetadata, error) {
-	if c.proj == nil || !strings.HasPrefix(spec, "./") || ContainsExpression(spec) {
+	key := spec
+	if strings.HasPrefix(spec, "$/") {
+		if len(spec) == 2 || strings.ContainsRune(spec, '@') {
+			return nil, nil
+		}
+		key = "." + spec[1:]
+	}
+	if c.proj == nil || !strings.HasPrefix(key, "./") || ContainsExpression(spec) {
 		return nil, nil
 	}
 
-	if m, ok := c.readCache(spec); ok {
+	if m, ok := c.readCache(key); ok {
 		c.debug("Cache hit for %s: %v", spec, m)
 		return m, nil
 	}
 
-	file := filepath.Join(c.proj.RootDir(), filepath.FromSlash(spec))
+	file := filepath.Join(c.proj.RootDir(), filepath.FromSlash(key))
 	src, err := os.ReadFile(file)
 	if err != nil {
-		c.writeCache(spec, nil) // Remember the workflow file was not found
+		c.writeCache(key, nil) // Remember the workflow file was not found
 		return nil, fmt.Errorf("could not read reusable workflow file for %q: %w", spec, err)
 	}
 
 	m, err := parseReusableWorkflowMetadata(src)
 	if err != nil {
-		c.writeCache(spec, nil) // Remember the workflow file was invalid
+		c.writeCache(key, nil) // Remember the workflow file was invalid
 		msg := strings.ReplaceAll(err.Error(), "\n", " ")
 		return nil, fmt.Errorf("error while parsing reusable workflow %q: %s", spec, msg)
 	}
 
 	c.debug("New reusable workflow metadata at %s: %v", file, m)
-	c.writeCache(spec, m)
+	c.writeCache(key, m)
 	return m, nil
 }
 
