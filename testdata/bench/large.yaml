@@ -204,7 +204,7 @@ jobs:
       - run: ./scripts/test-download-actionlint.bash
         shell: bash
   go-generate:
-    if: ${{ github.repository == 'rhysd/actionlint' }}
+    if: ${{ github.repository == 'matcra587/actionlint' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -234,9 +234,9 @@ jobs:
           title: 'Update generated files by CI'
           body: |
             This PR updates some generated files to the latest by running `go generate`.
-            This PR was created by [this workflow run](https://github.com/rhysd/actionlint/actions/runs/${{ github.run_id }}) automatically.
-            List of workflow runs is [here](https://github.com/rhysd/actionlint/actions/workflows/generate.yaml).
-          assignees: rhysd
+            This PR was created by [this workflow run](https://github.com/matcra587/actionlint/actions/runs/${{ github.run_id }}) automatically.
+            List of workflow runs is [here](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml).
+          assignees: matcra587
         if: ${{ steps.diff.outputs.pr == 'true' }}
   matcher-test:
     name: Test generate-actionlint-matcher
@@ -309,9 +309,9 @@ jobs:
     steps:
       - uses: vedantmgoyal9/winget-releaser@main
         with:
-          identifier: rhysd.actionlint
+          identifier: matcra587.actionlint
           installers-regex: '_windows_\w+\.zip$'
-          release-notes-url: 'https://github.com/rhysd/actionlint/blob/main/CHANGELOG.md#${{ github.ref_name }}'
+          release-notes-url: 'https://github.com/matcra587/actionlint/blob/main/CHANGELOG.md#${{ github.ref_name }}'
           token: ${{ secrets.WINGET_TOKEN }}
   docker:
     runs-on: ubuntu-latest
@@ -329,7 +329,7 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: rhysd
+          username: matcra587
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -340,5 +340,5 @@ jobs:
             ACTIONLINT_VER=${{ steps.tag.outputs.name }}
           push: true
           tags: |
-            rhysd/actionlint:${{ steps.tag.outputs.name }}
-            rhysd/actionlint:latest
+            matcra587/actionlint:${{ steps.tag.outputs.name }}
+            matcra587/actionlint:latest

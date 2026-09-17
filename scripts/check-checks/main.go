@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/rhysd/actionlint"
+	"github.com/matcra587/actionlint"
 )
 
 func Actionlint(src []byte) ([]byte, error) {
@@ -151,7 +151,7 @@ func (u *Updater) PlaygroundLink(src []byte) string {
 	u.err(comp.Close())
 	u.err(b64.Close())
 
-	return fmt.Sprintf("[Playground](https://rhysd.github.io/actionlint/#%s)", out.Bytes())
+	return fmt.Sprintf("[Playground](https://matcra587.github.io/actionlint/#%s)", out.Bytes())
 }
 
 func (u *Updater) state(s state, reason string) {

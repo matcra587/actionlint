@@ -14,7 +14,7 @@ It's helpful to check if a similar patch has been rejected in the past before su
 
 To report a bug, please submit a new ticket on GitHub. It's helpful to search similar tickets before making it.
 
-https://github.com/rhysd/actionlint/issues/new
+https://github.com/matcra587/actionlint/issues/new
 
 Providing a reproducible workflow content is much appreciated. If only a small snippet of workflow is provided or no
 input is provided at all, such issue tickets may get lower priority because they are occasionally time consuming to
@@ -24,7 +24,7 @@ investigate.
 
 Thank you for taking your time to improve this project. To send a patch, please submit a new pull request on GitHub.
 
-https://github.com/rhysd/actionlint/pulls
+https://github.com/matcra587/actionlint/pulls
 
 Before submitting your PR, please ensure the following points:
 
@@ -32,9 +32,6 @@ Before submitting your PR, please ensure the following points:
 - If you added a new feature, consider to add tests and explain it in [the usage document](docs/usage.md).
 - If you added a new public API, consider to add tests and a doc comment for the API.
 - If you updated [the checks document](docs/checks.md), ensure to run [the maintenance script](#about-checks-doc).
-
-Special thanks to the native English speakers for proofreading the documentation and error messages, as the author is not
-proficient in English.
 
 # Development
 
@@ -94,12 +91,12 @@ around linking libc. `mise run build` does this by default.
 
 ## Testing
 
-[![CI](https://github.com/rhysd/actionlint/actions/workflows/ci.yaml/badge.svg)](https://github.com/rhysd/actionlint/actions/workflows/ci.yaml)
-[![Generate](https://github.com/rhysd/actionlint/actions/workflows/generate.yaml/badge.svg)](https://github.com/rhysd/actionlint/actions/workflows/generate.yaml)
-[![Problem Matchers](https://github.com/rhysd/actionlint/actions/workflows/matcher.yaml/badge.svg)](https://github.com/rhysd/actionlint/actions/workflows/matcher.yaml)
-[![Download script](https://github.com/rhysd/actionlint/actions/workflows/download.yaml/badge.svg)](https://github.com/rhysd/actionlint/actions/workflows/download.yaml)
-[![Release](https://github.com/rhysd/actionlint/actions/workflows/release.yaml/badge.svg)](https://github.com/rhysd/actionlint/actions/workflows/release.yaml)
-[![Codecov](https://codecov.io/gh/rhysd/actionlint/graph/badge.svg?token=CgcOo0m9oW)](https://codecov.io/gh/rhysd/actionlint)
+[![CI](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml)
+[![Generate](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml)
+[![Problem Matchers](https://github.com/matcra587/actionlint/actions/workflows/matcher.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/matcher.yaml)
+[![Download script](https://github.com/matcra587/actionlint/actions/workflows/download.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/download.yaml)
+[![Release](https://github.com/matcra587/actionlint/actions/workflows/release.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/release.yaml)
+[![Codecov](https://codecov.io/gh/matcra587/actionlint/graph/badge.svg)](https://codecov.io/gh/matcra587/actionlint)
 
 Run the following command at the root of this repository.
 
@@ -176,7 +173,7 @@ When releasing v1.2.3 as example:
 3. Wait until [the CI release job](.github/workflows/release.yaml) completes successfully:
    - GoReleaser builds release binaries and make pre-release at GitHub and updates [Homebrew formula](./HomebrewFormula/actionlint.rb)
    - The CI job also updates version string in `./scripts/download-actionlint.bash`
-4. Open the pre-release at [release page](https://github.com/rhysd/actionlint/releases) with browser
+4. Open the pre-release at [release page](https://github.com/matcra587/actionlint/releases) with browser
 5. Write up release notes, uncheck pre-release checkbox and publish the new release
 6. Run `mise run changelog` to update [CHANGELOG.md](./CHANGELOG.md) and make a commit for the change. This step requires
    [changelog-from-release](https://github.com/rhysd/changelog-from-release).
@@ -246,7 +243,7 @@ automatically with `go generate`. The command runs [`generate-popular-actions`](
 The script also can detect new major releases of popular actions on GitHub by giving `-d` flag.
 
 The [`generate`](.github/workflows/generate.yaml) CI workflow weekly runs to detect new major releases and update
-`popular_actions.go`. Runs can be found [here](https://github.com/rhysd/actionlint/actions/workflows/generate.yaml).
+`popular_actions.go`. Runs can be found [here](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml).
 
 ### Maintain `all_webhooks.go`
 

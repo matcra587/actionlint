@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/rhysd/actionlint"
+	"github.com/matcra587/actionlint"
 )
 
 func ExampleLinter() {

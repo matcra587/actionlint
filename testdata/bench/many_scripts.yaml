@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download actionlint
-        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        run: bash <(curl https://raw.githubusercontent.com/matcra587/actionlint/main/scripts/download-actionlint.bash)
         shell: bash
       - run: ./actionlint
       - run: ./actionlint

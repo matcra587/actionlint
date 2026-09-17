@@ -57,9 +57,9 @@ jobs:
     steps:
       - uses: vedantmgoyal9/winget-releaser@main
         with:
-          identifier: rhysd.actionlint
+          identifier: matcra587.actionlint
           installers-regex: '_windows_\w+\.zip$'
-          release-notes-url: 'https://github.com/rhysd/actionlint/blob/main/CHANGELOG.md#${{ github.ref_name }}'
+          release-notes-url: 'https://github.com/matcra587/actionlint/blob/main/CHANGELOG.md#${{ github.ref_name }}'
           token: ${{ secrets.WINGET_TOKEN }}
   docker:
     runs-on: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v4
         with:
-          username: rhysd
+          username: matcra587
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v7
@@ -88,5 +88,5 @@ jobs:
             ACTIONLINT_VER=${{ steps.tag.outputs.name }}
           push: true
           tags: |
-            rhysd/actionlint:${{ steps.tag.outputs.name }}
-            rhysd/actionlint:latest
+            matcra587/actionlint:${{ steps.tag.outputs.name }}
+            matcra587/actionlint:latest
