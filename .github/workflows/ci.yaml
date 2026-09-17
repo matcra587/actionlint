@@ -31,7 +31,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest, macos-26-intel, windows-11-arm]
-        go: ['1.25', '1.26']
     steps:
       - name: Preserve fixture line endings
         run: git config --global core.autocrlf input
@@ -41,10 +40,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Go
+        id: go
         # @clover: constraint=major tags=setup-go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: ${{ matrix.go }}
+          go-version-file: go.mod
           check-latest: true
       - uses: $/.github/actions/setup-linters
       - name: Download and verify dependencies
@@ -73,7 +73,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
         env:
           OS: ${{ matrix.os }}
-          GO_VERSION: ${{ matrix.go }}
+          GO_VERSION: ${{ steps.go.outputs.go-version }}
 
   wasm:
     name: Wasm
@@ -91,7 +91,7 @@ jobs:
         # @clover: constraint=major tags=setup-go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: '1.26'
+          go-version-file: go.mod
           check-latest: true
       - name: Set up Node
         # @clover: constraint=major tags=setup-node
@@ -127,7 +127,7 @@ jobs:
         # @clover: constraint=major tags=setup-go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: '1.26'
+          go-version-file: go.mod
           check-latest: true
       - uses: $/.github/actions/setup-linters
       - name: Check Go formatting
@@ -164,7 +164,7 @@ jobs:
         # @clover: constraint=major tags=setup-go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: '1.26'
+          go-version-file: go.mod
           check-latest: true
       - name: Install mise tools
         # @clover: constraint=major tags=mise-action

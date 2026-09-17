@@ -38,10 +38,10 @@ func TestErrorErrorAt(t *testing.T) {
 		t.Errorf("wanted %q to be empty", err.Filepath)
 	}
 	if err.Line != 1 {
-		t.Errorf("wanted line 1 but got %q", err.Line)
+		t.Errorf("wanted line 1 but got %d", err.Line)
 	}
 	if err.Column != 2 {
-		t.Errorf("wanted col 2 but got %q", err.Column)
+		t.Errorf("wanted col 2 but got %d", err.Column)
 	}
 	if err.Kind != k {
 		t.Errorf("wanted %q but got %q", k, err.Kind)
@@ -59,10 +59,10 @@ func TestErrorErrorfAt(t *testing.T) {
 		t.Errorf("wanted %q to be empty", err.Filepath)
 	}
 	if err.Line != 1 {
-		t.Errorf("wanted line 1 but got %q", err.Line)
+		t.Errorf("wanted line 1 but got %d", err.Line)
 	}
 	if err.Column != 2 {
-		t.Errorf("wanted col 2 but got %q", err.Column)
+		t.Errorf("wanted col 2 but got %d", err.Column)
 	}
 	if err.Kind != k {
 		t.Errorf("wanted %q but got %q", k, err.Kind)
@@ -689,7 +689,7 @@ func TestErrorFormatterRegisterRuleInParallel(t *testing.T) {
 	}
 
 	rules := []Rule{}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		rules = append(rules,
 			&RuleBase{
 				name: fmt.Sprintf("rule%d", i),
@@ -700,7 +700,7 @@ func TestErrorFormatterRegisterRuleInParallel(t *testing.T) {
 
 	done := make(chan struct{})
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		go func() {
 			for _, r := range rules {
 				f.RegisterRule(r)
@@ -709,7 +709,7 @@ func TestErrorFormatterRegisterRuleInParallel(t *testing.T) {
 		}()
 	}
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		<-done
 	}
 

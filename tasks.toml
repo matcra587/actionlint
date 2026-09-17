@@ -33,16 +33,21 @@ run = [
 [lint]
 description = "Run Go analysis, vulnerability checks, and documentation checks"
 alias = "l"
-tools = { staticcheck = "2026.1", "go:golang.org/x/vuln/cmd/govulncheck" = "1.6.0" }
+tools.staticcheck = "2026.2.1"
 run = [
     "go vet ./...",
     # Restrict staticcheck to project packages, excluding playground/node_modules.
     "staticcheck ./ ./scripts/... ./cmd/...",
-    "govulncheck ./...",
+    { task = "security" },
     { task = "lint:wasm" },
     "go run ./scripts/check-checks -quiet ./docs/checks.md",
 ]
-run_windows = ["go vet ./...", "staticcheck ./ ./scripts/... ./cmd/...", "govulncheck ./..."]
+run_windows = ["go vet ./...", "staticcheck ./ ./scripts/... ./cmd/...", { task = "security" }]
+
+[security]
+description = "Check Go code for reachable vulnerabilities"
+tools."go:golang.org/x/vuln/cmd/govulncheck" = "1.8.0"
+run = "govulncheck ./..."
 
 ["lint:shell"]
 description = "Lint repository Bash scripts with ShellCheck"
@@ -55,7 +60,7 @@ run = "hadolint --ignore DL3018 --strict-labels Dockerfile"
 
 ["lint:wasm"]
 description = "Run staticcheck on the playground Wasm package"
-tools.staticcheck = "2026.1"
+tools.staticcheck = "2026.2.1"
 env.GOOS = "js"
 env.GOARCH = "wasm"
 run = "staticcheck ./playground"

@@ -213,7 +213,7 @@ func newNullLocalActionsCache(dbg io.Writer) *LocalActionsCache {
 	return &LocalActionsCache{dbg: dbg}
 }
 
-func (c *LocalActionsCache) debug(format string, args ...interface{}) {
+func (c *LocalActionsCache) debug(format string, args ...any) {
 	if c.dbg == nil {
 		return
 	}

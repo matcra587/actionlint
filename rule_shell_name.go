@@ -1,6 +1,7 @@
 package actionlint
 
 import (
+	"slices"
 	"strings"
 )
 
@@ -22,10 +23,8 @@ type RuleShellName struct {
 // NewRuleShellName creates new RuleShellName instance.
 func NewRuleShellName() *RuleShellName {
 	return &RuleShellName{
-		RuleBase: RuleBase{
-			name: "shell-name",
-			desc: "Checks for shell names used for scripts in \"run:\"",
-		},
+		name:     "shell-name",
+		desc:     "Checks for shell names used for scripts in \"run:\"",
 		platform: platformKindAny,
 	}
 }
@@ -83,10 +82,8 @@ func (rule *RuleShellName) checkShellName(node *String) {
 	name := strings.ToLower(node.Value)
 	available := getAvailableShellNames(rule.platform)
 
-	for _, s := range available {
-		if name == s {
-			return // ok
-		}
+	if slices.Contains(available, name) {
+		return // ok
 	}
 
 	onPlatform := ""

@@ -1,6 +1,6 @@
 module github.com/matcra587/actionlint
 
-go 1.25.0
+go 1.27.1
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.10.0
@@ -12,9 +12,9 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/yuin/goldmark v1.7.17
 	go.yaml.in/yaml/v4 v4.0.0-rc.3
-	golang.org/x/net v0.52.0
+	golang.org/x/net v0.59.0
 	golang.org/x/sync v0.20.0
-	golang.org/x/sys v0.42.0
+	golang.org/x/sys v0.48.0
 )
 
 require (

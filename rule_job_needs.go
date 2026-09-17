@@ -1,6 +1,7 @@
 package actionlint
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -36,21 +37,14 @@ type RuleJobNeeds struct {
 // NewRuleJobNeeds creates new RuleJobNeeds instance.
 func NewRuleJobNeeds() *RuleJobNeeds {
 	return &RuleJobNeeds{
-		RuleBase: RuleBase{
-			name: "job-needs",
-			desc: "Checks for job IDs in \"needs:\". Undefined IDs and cyclic dependencies are checked",
-		},
+		name:  "job-needs",
+		desc:  "Checks for job IDs in \"needs:\". Undefined IDs and cyclic dependencies are checked",
 		nodes: map[string]*jobNode{},
 	}
 }
 
 func contains[T comparable](heystack []T, needle T) bool {
-	for _, s := range heystack {
-		if s == needle {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(heystack, needle)
 }
 
 // VisitJobPre is callback when visiting Job node before visiting its children.

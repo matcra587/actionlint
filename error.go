@@ -54,7 +54,7 @@ func errorAt(pos *Pos, kind string, msg string) *Error {
 	}
 }
 
-func errorfAt(pos *Pos, kind string, format string, args ...interface{}) *Error {
+func errorfAt(pos *Pos, kind string, format string, args ...any) *Error {
 	return &Error{
 		Message: fmt.Sprintf(format, args...),
 		Line:    pos.Line,
@@ -258,8 +258,8 @@ func NewErrorFormatter(format string) (*ErrorFormatter, error) {
 		"syntax-check": {"syntax-check", "Checks for GitHub Actions workflow syntax"},
 	}
 
-	funcs := template.FuncMap(map[string]interface{}{
-		"json": func(data interface{}) (string, error) {
+	funcs := template.FuncMap(map[string]any{
+		"json": func(data any) (string, error) {
 			var b strings.Builder
 			enc := json.NewEncoder(&b)
 			if err := enc.Encode(data); err != nil {

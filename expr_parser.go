@@ -34,7 +34,7 @@ func (p *ExprParser) error(msg string) {
 	}
 }
 
-func (p *ExprParser) errorf(format string, args ...interface{}) {
+func (p *ExprParser) errorf(format string, args ...any) {
 	p.error(fmt.Sprintf(format, args...))
 }
 
