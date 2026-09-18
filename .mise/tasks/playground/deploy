@@ -1,9 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#MISE description="Prepare and commit the playground deployment, then preview it (requires wasm-opt)"
+#MISE dir="{{config_root}}"
+#MISE raw=true
 
 set -e -o pipefail
 
-if [ ! -d .git ]; then
-    echo 'This script must be run from root of repository: bash ./playground/deploy.bash' 1>&2
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo 'Run mise run playground:deploy from the actionlint repository' 1>&2
     exit 1
 fi
 
@@ -23,12 +26,8 @@ mkdir ./playground-dist
 
 files=(
     index.html
-    index.js
-    index.js.map
-    index.ts
-    lib
+    assets
     main.wasm
-    style.css
 )
 
 if [[ "$SKIP_BUILD_WASM" != "" ]]; then
@@ -41,14 +40,14 @@ if [[ "$SKIP_BUILD_WASM" != "" ]]; then
     done
 fi
 
-echo "Copying built assets from ./playground to ./playground-dist: " "${files[@]}"
+echo "Copying built assets from ./playground/dist to ./playground-dist: " "${files[@]}"
 for f in "${files[@]}"; do
-    cp -R "./playground/${f}" "./playground-dist/${f}"
+    cp -R "./playground/dist/${f}" "./playground-dist/${f}"
 done
 
 if [[ "$SKIP_BUILD_WASM" == "" ]]; then
     echo 'Applying wasm-opt to ./playground-dist/main.wasm'
-    wasm-opt -O -o ./playground-dist/opt.wasm ./playground-dist/main.wasm --enable-bulk-memory
+    wasm-opt -O -o ./playground-dist/opt.wasm ./playground-dist/main.wasm --enable-bulk-memory --enable-nontrapping-float-to-int
     mv ./playground-dist/opt.wasm ./playground-dist/main.wasm
 else
     echo 'Skipped applying wasm-opt because SKIP_BUILD_WASM environment variable is set'
@@ -62,9 +61,10 @@ echo 'Switching to gh-pages branch'
 git checkout gh-pages
 
 echo 'Removing previous assets in branch'
+# Remove the previous layout as well as the current bundle directory.
+git rm -rf --ignore-unmatch -- index.js index.js.map index.ts lib style.css
 for f in "${files[@]}"; do
-    # This command fails when $f is new file
-    git rm -rf "./${f}" || true
+    git rm -rf --ignore-unmatch -- "./${f}"
 done
 
 echo 'Adding new assets to branch'
@@ -83,4 +83,4 @@ git commit -m "deploy from ${sha}"
 rm -r ./playground-dist
 
 echo "Successfully prepared deployment. Visit http://localhost:1234 and do the final check before deployment. If it looks good, stop the server with Ctrl+C and deploy it by 'git push'"
-(trap '' INT; ./playground/node_modules/.bin/http-server . -p 1234 || true)
+(trap '' INT; bun ./playground/node_modules/http-server/bin/http-server . -p 1234 || true)

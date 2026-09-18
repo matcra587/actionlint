@@ -1,8 +1,11 @@
-// `styleActiveLine` is a property for active-line.js addon. @types/codemirror requires `import 'codemirror/addon/selection/active-line'`
-// to add properties to `CodeMirror.EditorConfiguration` object but we don't use import statement.
-/// <reference types="codemirror/addon/selection/active-line" />
+import CodeMirror from 'codemirror';
+import 'codemirror/addon/selection/active-line';
+import 'codemirror/mode/yaml/yaml';
+import isMobile from 'ismobilejs';
+import * as pako from 'pako';
+import './wasm_exec.js';
 
-(async function () {
+(async () => {
     function getElementById(id: string): HTMLElement {
         const e = document.getElementById(id);
         if (e === null) {
@@ -124,10 +127,10 @@ jobs:
     };
     const editor = CodeMirror(getElementById('editor'), editorConfig);
 
-    const debounceInterval = isMobile.phone ? 1000 : 300;
+    const debounceInterval = isMobile(window.navigator).phone ? 1000 : 300;
     let debounceId: number | null = null;
     let contentChanged = false;
-    editor.on('change', function (_, e) {
+    editor.on('change', (_, e) => {
         contentChanged = true;
 
         if (typeof window.runActionlint !== 'function') {
@@ -145,8 +148,7 @@ jobs:
             successMessage.style.display = 'none';
             invalidInputMessage.style.display = 'none';
             editor.clearGutter('error-marker');
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            window.runActionlint!(editor.getValue());
+            window.runActionlint?.(editor.getValue());
         }
 
         if (e.origin === 'paste') {
@@ -287,11 +289,10 @@ jobs:
         }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     checkUrlButton.addEventListener('click', async e => {
         e.preventDefault();
         const input = checkUrlInput.value;
-        let src;
+        let src: string;
         try {
             src = await getRemoteSource(input);
         } catch (err) {
@@ -320,7 +321,7 @@ jobs:
 
     const go = new Go();
 
-    let result;
+    let result: WebAssembly.WebAssemblyInstantiatedSource;
     // Note: WebAssembly.instantiateStreaming is not implemented on Safari yet
     if (typeof WebAssembly.instantiateStreaming === 'function') {
         result = await WebAssembly.instantiateStreaming(fetch('main.wasm'), go.importObject);

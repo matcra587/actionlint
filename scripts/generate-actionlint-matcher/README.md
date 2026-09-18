@@ -12,7 +12,7 @@ mise run matcher:generate
 or directly run the script
 
 ```sh
-node ./scripts/generate-actionlint-matcher/main.mjs .github/actionlint-matcher.json
+bun ./scripts/generate-actionlint-matcher/main.mjs .github/actionlint-matcher.json
 ```
 
 ## Test
