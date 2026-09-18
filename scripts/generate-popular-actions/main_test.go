@@ -45,9 +45,7 @@ func TestDefaultPopularActions(t *testing.T) {
 				t.Errorf("tags[%d] at action %q must not be empty string", i, a.Slug)
 				continue
 			}
-			if tag == a.Next {
-				t.Errorf("tags[%d] at action %q is equal to next version %q", i, a.Slug, a.Next)
-			}
+
 			if j, ok := tags[tag]; ok {
 				t.Errorf("duplicate tag %q at action %q appears: tags[%d] v.s. tags[%d]", tag, a.Slug, i, j)
 			} else {
@@ -320,9 +318,9 @@ func TestDetectNewRelease(t *testing.T) {
 		t.Fatal("exit status is not 2:", status)
 	}
 	out := stdout.String()
-	want := "https://github.com/rhysd/action-setup-vim/tree/v1"
+	want := "rhysd/action-setup-vim@v1"
 	if !strings.Contains(out, want) {
-		t.Fatalf("expected URL %q is not included in stdout: %q", want, out)
+		t.Fatalf("expected action reference %q is not included in stdout: %q", want, out)
 	}
 }
 
@@ -470,32 +468,6 @@ func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 	return f(r)
 }
 
-func TestDetectErrorBadRequest(t *testing.T) {
-	stdout := io.Discard
-	stderr := &bytes.Buffer{}
-	f := filepath.Join("testdata", "registry", "empty_slug.json")
-	g := newGen(stdout, stderr, io.Discard)
-	g.client = &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		if r.Method != http.MethodHead || r.URL.String() != "https://raw.githubusercontent.com//v2/action.yml" {
-			t.Errorf("unexpected request: %s %s", r.Method, r.URL)
-		}
-		return &http.Response{
-			StatusCode: http.StatusBadRequest,
-			Status:     "400 Bad Request",
-			Body:       http.NoBody,
-			Request:    r,
-		}, nil
-	})}
-	status := g.run([]string{"test", "-d", "-r", f})
-	if status != 1 {
-		t.Fatal("exit status is not 1:", status)
-	}
-	out := stderr.String()
-	if !strings.Contains(out, "head request for https://raw.githubusercontent.com//v2/action.yml was not successful") {
-		t.Fatalf("stderr was unexpected: %q", out)
-	}
-}
-
 func TestReadActionRegistryError(t *testing.T) {
 	tests := []struct {
 		file string
@@ -546,22 +518,6 @@ func TestActionBuildRawURL(t *testing.T) {
 	a = &registry{Slug: "foo/bar", FileExt: "yaml"}
 	have = a.rawURL("v1")
 	want = "https://raw.githubusercontent.com/foo/bar/v1/action.yaml"
-	if have != want {
-		t.Errorf("Wanted %q but have %q", want, have)
-	}
-}
-
-func TestActionBuildGitHubURL(t *testing.T) {
-	a := &registry{Slug: "foo/bar"}
-	have := a.githubURL("v1")
-	want := "https://github.com/foo/bar/tree/v1"
-	if have != want {
-		t.Errorf("Wanted %q but have %q", want, have)
-	}
-
-	a = &registry{Slug: "foo/bar", Path: "/a/b"}
-	have = a.githubURL("v1")
-	want = "https://github.com/foo/bar/tree/v1/a/b"
 	if have != want {
 		t.Errorf("Wanted %q but have %q", want, have)
 	}

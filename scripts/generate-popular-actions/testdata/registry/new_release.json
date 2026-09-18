@@ -1,7 +1,9 @@
 [
     {
         "slug": "rhysd/action-setup-vim",
-        "tags": ["v0"],
-        "next": "v1"
+        "tags": [
+            "v0"
+        ],
+        "version_pattern": "v([0-9]+)"
     }
 ]

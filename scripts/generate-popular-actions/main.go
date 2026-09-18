@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"context"
 	_ "embed"
 	"encoding/json"
 	"flag"
@@ -16,6 +17,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/matcra587/actionlint"
 	"go.yaml.in/yaml/v4"
@@ -36,18 +38,18 @@ type actionOutput struct {
 }
 
 type registry struct {
-	Slug    string   `json:"slug"`
-	Path    string   `json:"path"`
-	Tags    []string `json:"tags"`
-	Next    string   `json:"next"`
-	FileExt string   `json:"file_ext"`
+	Slug           string   `json:"slug"`
+	Path           string   `json:"path,omitempty"`
+	Tags           []string `json:"tags"`
+	VersionPattern string   `json:"version_pattern,omitempty"`
+	FileExt        string   `json:"file_ext,omitempty"`
 	// slugs not to check inputs. Some actions allow to specify inputs which are not defined in action.yml.
 	// In such cases, actionlint no longer can check the inputs, but it can still check outputs. (#16)
-	SkipInputs bool `json:"skip_inputs"`
+	SkipInputs bool `json:"skip_inputs,omitempty"`
 	// slugs which allows any outputs to be set. Some actions sets outputs 'dynamically'. Those outputs
 	// may or may not exist. And they are not listed in action.yml metadata. actionlint cannot check
 	// such outputs and fallback into allowing to set any outputs. (#18)
-	SkipOutputs bool `json:"skip_outputs"`
+	SkipOutputs bool `json:"skip_outputs,omitempty"`
 }
 
 func (r *registry) rawURL(tag string) string {
@@ -56,10 +58,6 @@ func (r *registry) rawURL(tag string) string {
 		ext = r.FileExt
 	}
 	return fmt.Sprintf("https://raw.githubusercontent.com/%s/%s%s/action.%s", r.Slug, tag, r.Path, ext)
-}
-
-func (r *registry) githubURL(tag string) string {
-	return fmt.Sprintf("https://github.com/%s/tree/%s%s", r.Slug, tag, r.Path)
 }
 
 func (r *registry) spec(tag string) string {
@@ -91,11 +89,13 @@ type gen struct {
 	log         *log.Logger
 	rawRegistry []byte
 	client      *http.Client
+	listRefs    func(context.Context, string) ([]string, error)
 }
 
 func newGen(stdout, stderr, dbgout io.Writer) *gen {
 	l := log.New(dbgout, "", log.LstdFlags)
-	return &gen{stdout, stderr, l, defaultPopularActionsJSON, &http.Client{}}
+	return &gen{stdout: stdout, stderr: stderr, log: l, rawRegistry: defaultPopularActionsJSON,
+		client: &http.Client{Timeout: 30 * time.Second}, listRefs: githubRefs}
 }
 
 func (g *gen) registry() ([]*registry, error) {
@@ -360,99 +360,20 @@ func (g *gen) readJSONL(file string) (map[string]*actionlint.ActionMetadata, err
 	}
 }
 
-func (g *gen) detectNewReleaseURLs() ([]string, error) {
-	all, err := g.registry()
-	if err != nil {
-		return nil, err
-	}
-
-	// Filter actions which have no next versions
-	actions := []*registry{}
-	for _, a := range all {
-		if a.Next != "" {
-			actions = append(actions, a)
-		}
-	}
-
-	g.log.Println("Start detecting new versions in", len(actions), "repositories")
-
-	urls := make(chan string)
-	done := make(chan struct{})
-	errs := make(chan error)
-	reqs := make(chan *registry)
-
-	for range 4 {
-		go func(ret chan<- string, errs chan<- error, reqs <-chan *registry, done <-chan struct{}) {
-			for {
-				select {
-				case r := <-reqs:
-					url := r.rawURL(r.Next)
-					g.log.Println("Checking", url)
-					res, err := g.client.Head(url)
-					if err != nil {
-						errs <- fmt.Errorf("could not send head request to %s: %w", url, err)
-						break
-					}
-					if res.StatusCode == 404 {
-						g.log.Println("Not found:", url)
-						ret <- ""
-						break
-					}
-					if res.StatusCode < 200 || 300 <= res.StatusCode {
-						errs <- fmt.Errorf("head request for %s was not successful: %s", url, res.Status)
-						break
-					}
-					g.log.Println("Found:", url)
-					ret <- r.githubURL(r.Next)
-				case <-done:
-					return
-				}
-			}
-		}(urls, errs, reqs, done)
-	}
-
-	go func(done <-chan struct{}) {
-		for _, a := range actions {
-			select {
-			case reqs <- a:
-			case <-done:
-				return
-			}
-		}
-	}(done)
-
-	us := []string{}
-	for i := 0; i < len(actions); i++ {
-		select {
-		case u := <-urls:
-			if u != "" {
-				us = append(us, u)
-			}
-		case err := <-errs:
-			close(done)
-			return nil, err
-		}
-	}
-	close(done)
-
-	sort.Strings(us)
-
-	g.log.Println("Done detecting new versions in", len(actions), "repositories")
-	return us, nil
-}
-
 func (g *gen) run(args []string) int {
 	var source string
 	var format string
 	var quiet bool
 	var detect bool
+	var update bool
 	var registry string
 
 	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	flags.StringVar(&source, "s", "", "source of actions as local jsonl file path instead of fetching actions metadata from github.com")
 	flags.StringVar(&format, "f", "go", `format of generated code output to stdout. "go" or "jsonl"`)
 	flags.StringVar(&registry, "r", "", "registry of actions as local JSON file path. when this flag is not given, the default popular actions registry will be used")
-	flags.BoolVar(&detect, "d", false, "detect new version of actions are released")
+	flags.BoolVar(&detect, "d", false, "detect new versions of actions (exit 2 when found)")
+	flags.BoolVar(&update, "u", false, "add discovered versions to the registry supplied with -r")
 	flags.BoolVar(&quiet, "q", false, "disable log output to stderr")
 	flags.SetOutput(g.stderr)
 	flags.Usage = func() {
@@ -469,8 +390,9 @@ func (g *gen) run(args []string) int {
   in the executable. To use your own registry JSON file, use -r option.
 
   When -d flag is given, it tries to detect new release for popular actions.
-  When detecting some new releases, it shows their URLs to stdout and returns
-  non-zero exit status.
+  When detecting some new releases, it shows their action references to stdout and returns
+  exit status 2. With -u -r FILE, it adds discovered versions to FILE and exits
+  successfully. Both modes require Git and network access.
 
 Flags:`)
 		flags.PrintDefaults()
@@ -502,21 +424,36 @@ Flags:`)
 
 	g.log.Println("Start generate-popular-actions script")
 
-	if detect {
-		urls, err := g.detectNewReleaseURLs()
+	if detect || update {
+		if (detect && update) || (update && registry == "") || source != "" || flags.NArg() != 0 {
+			fmt.Fprintln(g.stderr, "use either -d or -u -r FILE, without -s or an output file")
+			return 1
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+		defer cancel()
+		actions, added, err := g.discoverVersions(ctx)
 		if err != nil {
 			fmt.Fprintln(g.stderr, err)
 			return 1
 		}
-		if len(urls) == 0 {
+		if len(added) == 0 {
 			fmt.Fprintln(g.stdout, "No new release was found")
 			return 0
 		}
-		fmt.Fprintln(g.stdout, "Detected some new releases")
-		for _, u := range urls {
-			fmt.Fprintln(g.stdout, u)
+		if update {
+			if err := writeRegistry(registry, actions); err != nil {
+				fmt.Fprintln(g.stderr, err)
+				return 1
+			}
 		}
-		return 2
+		for _, spec := range added {
+			fmt.Fprintln(g.stdout, spec)
+		}
+		fmt.Fprintf(g.stdout, "Found %d new action versions\n", len(added))
+		if detect {
+			return 2
+		}
+		return 0
 	}
 
 	if format != "go" && format != "jsonl" {
