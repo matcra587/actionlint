@@ -62,7 +62,7 @@ run = "govulncheck ./..."
 
 ["lint:shell"]
 description = "Lint repository Bash scripts with ShellCheck"
-run = "shellcheck ./scripts/*.bash ./.mise/tasks/matcher/fixtures ./.mise/tasks/playground/deploy ./.mise/tasks/release/bump"
+run = "shellcheck ./scripts/*.bash ./.mise/tasks/download/test ./.mise/tasks/matcher/fixtures ./.mise/tasks/playground/deploy ./.mise/tasks/release/bump"
 
 ["lint:docker"]
 description = "Lint the Dockerfile with Hadolint"

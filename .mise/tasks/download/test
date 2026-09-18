@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#MISE description="Test the release download script (requires network access)"
+#MISE dir="{{config_root}}"
 
 set -o pipefail
 set -e
@@ -18,12 +20,16 @@ pushd "$temp_dir"
 # Normal cases
 set -e
 
-# No arguments
-out="$(bash "$script")"
-if [ -n "$GITHUB_ACTION" ]; then
-    if [[ "$out" != *"executable="* ]]; then
-        echo "'executable' step output is not set: '${out}'" >&2
-    fi
+# No arguments. Use a fresh output file and exercise step outputs locally too.
+output_file="$temp_dir/github-output"
+GITHUB_ACTION=download-test GITHUB_OUTPUT="$output_file" bash "$script"
+executable="$temp_dir/actionlint"
+if [[ -f "$executable.exe" ]]; then
+    executable+=".exe"
+fi
+if [[ ! -f "$output_file" ]] || ! grep -Fxq -- "executable=$executable" "$output_file"; then
+    echo "FAIL: 'executable' step output is missing or incorrect" >&2
+    exit 1
 fi
 out="$(./actionlint -version)"
 if [[ "$out" != *'installed by downloading from release page'* ]]; then
