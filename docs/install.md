@@ -1,5 +1,4 @@
-Installation
-============
+# Installation
 
 This document describes how to install [actionlint](../docs).
 
@@ -120,6 +119,7 @@ gh attestation verify -R rhysd/actionlint actionlint_1.7.11_linux_amd64.tar.gz
 ```
 
 <a id="download-script"></a>
+
 ## Download script
 
 To install `actionlint` executable with one command, [the download script](../scripts/download-actionlint.bash) is available.

@@ -1,5 +1,4 @@
-check-checks
-============
+# check-checks
 
 This is a script to maintain [the 'Checks' document](../../docs/checks.md).
 
@@ -20,7 +19,7 @@ For making the implementation simple, this script does not support Windows.
 
 ## Usage
 
-```
+```text
 go run ./scripts/check-checks [FLAGS] FILE
 ```
 

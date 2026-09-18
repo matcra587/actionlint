@@ -1,5 +1,4 @@
-Configuration
-=============
+# Configuration
 
 This document describes how to configure [actionlint](..) behavior.
 

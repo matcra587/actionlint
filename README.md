@@ -1,5 +1,5 @@
-actionlint
-==========
+# actionlint
+
 [![CI Status][ci-badge]][ci]
 [![API Document][apidoc-badge]][apidoc]
 
@@ -54,7 +54,7 @@ jobs:
 
 **actionlint reports 7 errors:**
 
-```
+```text
 test.yaml:3:5: unexpected key "branch" for "push" section. expected one of "branches", "branches-ignore", "paths", "paths-ignore", "tags", "tags-ignore", "types", "workflows" [syntax-check]
   |
 3 |     branch: main
@@ -140,7 +140,6 @@ actionlint is distributed under [the MIT license](./LICENSE.txt).
 [syntax-doc]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 [filter-pattern-doc]: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
 [script-injection-doc]: https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
-[releases]: https://github.com/matcra587/actionlint/releases
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
 [checks]: https://github.com/matcra587/actionlint/blob/main/docs/checks.md
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->

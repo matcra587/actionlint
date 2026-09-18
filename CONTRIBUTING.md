@@ -10,21 +10,21 @@ maintain a heavy configuration file just for linting CI workflows.
 
 It's helpful to check if a similar patch has been rejected in the past before submitting it.
 
-# Reporting an issue
+## Reporting an issue
 
 To report a bug, please submit a new ticket on GitHub. It's helpful to search similar tickets before making it.
 
-https://github.com/matcra587/actionlint/issues/new/choose
+<https://github.com/matcra587/actionlint/issues/new/choose>
 
 Providing a reproducible workflow content is much appreciated. If only a small snippet of workflow is provided or no
 input is provided at all, such issue tickets may get lower priority because they are occasionally time consuming to
 investigate.
 
-# Sending a patch
+## Sending a patch
 
 Thank you for taking your time to improve this project. To send a patch, please submit a new pull request on GitHub.
 
-https://github.com/matcra587/actionlint/pulls
+<https://github.com/matcra587/actionlint/pulls>
 
 Before submitting your PR, please ensure the following points:
 
@@ -33,7 +33,7 @@ Before submitting your PR, please ensure the following points:
 - If you added a new public API, consider to add tests and a doc comment for the API.
 - If you updated [the checks document](docs/checks.md), ensure to run [the maintenance script](#about-checks-doc).
 
-# Development
+## Development
 
 [mise](https://mise.jdx.dev/) runs the development tasks defined in [`.mise/tasks/tasks.toml`](./.mise/tasks/tasks.toml).
 Use mise 2026.9.7 or later. Run `mise install --locked` to install the pinned Go, Bun, and ShellCheck tools.
@@ -47,7 +47,7 @@ mise tasks
 Lint tasks install the versions of staticcheck and govulncheck pinned in `.mise/tasks/tasks.toml` and recorded in `mise.lock`.
 Go and Bun continue to manage project dependencies. Tasks do not use timestamp files to skip tests or lint checks.
 
-## Git hooks
+### Git hooks
 
 Install [hk](https://hk.jdx.dev/) using the version pinned in `mise.toml`, then enable the repository's hooks:
 
@@ -67,7 +67,7 @@ The hook skips these checks when `CI` is nonempty, matching the previous hook. B
 Run the same checks manually, including in CI, with `mise run check` or `mise exec -- hk check --all`.
 Checks use the working tree and do not stage changes; builds may update build output.
 
-## Building
+### Building
 
 Go 1.27.1 or newer is required. `mise install --locked` installs the pinned development toolchain.
 
@@ -91,7 +91,7 @@ mise run generate
 Since actionlint doesn't use any cgo features, setting `CGO_ENABLED=0` environment variable is recommended to avoid troubles
 around linking libc. `mise run build` does this by default.
 
-## Testing
+### Testing
 
 Run `mise run security` to check Go code with the pinned govulncheck version. The lint task also runs this check.
 
@@ -137,7 +137,7 @@ Automated tests are as follows.
     Corresponding `*.out` files are expected error messages. Empty `*.out` file means the test case should cause no errors.
     'Project' test is used for use cases where multiple files are related (reusable workflows, local actions, config files, ...).
 
-## Linting
+### Linting
 
 [staticcheck](https://staticcheck.io/) is used to lint Go sources, and
 [govulncheck](https://go.dev/doc/security/vuln/) is used for security checks. Run them alongside `go vet`, Wasm analysis,
@@ -147,7 +147,10 @@ and documentation checks with:
 mise run lint
 ```
 
-## Fuzzing
+Run `mise run lint:markdown` to check Markdown with rumdl's GitHub Flavored Markdown settings in `rumdl.toml`.
+Run `mise run format:markdown` to apply formatting fixes. Test fixtures and the generated changelog are excluded.
+
+### Fuzzing
 
 Fuzz tests use [go-fuzz](https://github.com/dvyukov/go-fuzz). Install `go-fuzz` and `go-fuzz-build` in your system.
 
@@ -167,7 +170,7 @@ or
 mise run fuzz FuzzParse
 ```
 
-## Make a new release
+### Make a new release
 
 The [release workflow](.github/workflows/release.yaml) runs for stable `vX.Y.Z` tags. It waits for successful CI and security
 push runs on the tagged commit, then uses GoReleaser to publish release archives, signed GHCR images for Linux AMD64 and
@@ -191,7 +194,7 @@ To release v1.2.3:
    [changelog-from-release](https://github.com/rhysd/changelog-from-release).
 6. Update the playground with `mise run playground:deploy` if needed.
 
-## How to generate the manual
+### How to generate the manual
 
 The manual source is [`man/actionlint.1.md`](./man/actionlint.1.md). The task installs a pinned
 [go-md2man](https://github.com/cpuguy83/go-md2man) to generate `man/actionlint.1` and uses the project's Goldmark dependency
@@ -201,11 +204,11 @@ to generate `man/actionlint.1.html` for the playground. Release archives include
 mise run docs:man
 ```
 
-## How to develop playground
+### How to develop playground
 
 Visit [`playground/README.md`](./playground/README.md).
 
-## How to deploy playground
+### How to deploy playground
 
 Run `mise run playground:deploy` from anywhere in the repository. The [mise file task](./.mise/tasks/playground/deploy) runs at the repository root. It does:
 
@@ -232,11 +235,11 @@ commit.
 SKIP_BUILD_WASM=true mise run playground:deploy
 ```
 
-## Maintain auto-generated sources
+### Maintain auto-generated sources
 
 Some files are generated by scripts in [`scripts/`](./scripts) directory. These files are kept up-to-date by CI workflows.
 
-### Maintain `popular_actions.go`
+#### Maintain `popular_actions.go`
 
 [`popular_actions.go`](./popular_actions.go) is a data set of metadata of popular actions hosted on GitHub. It is generated
 automatically with `go generate`. The command runs [`generate-popular-actions`](./scripts/generate-popular-actions) script.
@@ -247,9 +250,9 @@ when no updates are needed. Run `mise run test` and `mise run workflows` to vali
 See the [generator README](./scripts/generate-popular-actions/README.md) for discovery policies.
 
 The [`generate`](.github/workflows/generate.yaml) CI workflow runs weekly to discover versions, regenerate sources,
-and validate them before opening or updating a single generated-data pull request. Runs can be found [here](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml).
+and validate them before opening or updating a single generated-data pull request. See the [generated-data workflow runs](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml).
 
-### Maintain `all_webhooks.go`
+#### Maintain `all_webhooks.go`
 
 [`all_webhooks.go`](./all_webhooks.go) is a table all webhooks supported by GitHub Actions to trigger workflows. Note that
 not all webhooks are supported by GitHub Actions.
@@ -262,7 +265,7 @@ parses the markdown document, and extracts webhook names and their types. For mo
 
 Updating `all_webhooks.go` is run weekly on CI by [`generate`](.github/workflows/generate.yaml) workflow.
 
-### Maintain `actionlint-matcher.json`
+#### Maintain `actionlint-matcher.json`
 
 [`actionlint-matcher.json`](.github/actionlint-matcher.json) is a matcher configuration to extract error annotations from outputs
 of `actionlint` command. See [the document](docs/usage.md#problem-matchers) for its usage.
@@ -273,7 +276,7 @@ file is not modified manually.
 It is generated by [`generate-actionlint-matcher`](./scripts/generate-actionlint-matcher) script. See the README.md file for the
 usage of the script and how to run the tests for it.
 
-### Maintain `availability.go`
+#### Maintain `availability.go`
 
 [`availability.go`](./availability.go) is a table for conversion from workflow key (like `jobs.<job_id>.if`) to availability of
 contexts and special functions. GitHub Actions limits contexts and functions in certain places. For example:
@@ -288,7 +291,8 @@ See [the readme of the script](./scripts/generate-availability/README.md) for th
 Update for `availability.go` is run weekly on CI by [`generate`](.github/workflows/generate.yaml) workflow.
 
 <a id="about-checks-doc"></a>
-## How to write checks document
+
+### How to write checks document
 
 The ['Checks' document](./docs/checks.md) is a large document to explain all checks by actionlint.
 

@@ -1,5 +1,4 @@
-Usage
-=====
+# Usage
 
 This document describes how to use [actionlint](..).
 
@@ -43,6 +42,7 @@ actionlint -shellcheck= -pyflakes=
 ```
 
 <a id="format"></a>
+
 ### Format error messages
 
 `-format` option can flexibly format error messages with [Go template syntax][go-template].
@@ -57,7 +57,7 @@ actionlint -format '{{json .}}'
 
 Output:
 
-```
+```text
 [{"message":"unexpected key \"branch\" for ...
 ```
 
@@ -88,7 +88,7 @@ actionlint -format '{{range $err := .}}{{json $err}}{{end}}'
 
 Output:
 
-```
+```text
 {"message":"unexpected key \"branch\" for ...
 {"message":"character '\\' is invalid for branch ...
 {"message":"label \"linux-latest\" is unknown. ...
@@ -126,7 +126,7 @@ objects.
 
 The sequence can be traversed with `range` action, which is like `for ... = range ... {}` in Go.
 
-```
+```text
 {{range $err := .}} this part iterates error objects with the iteration variable $err {{end}}
 ```
 
@@ -163,13 +163,13 @@ The kind object returned from `allKinds` action has the following fields.
 
 For example, the following simple iteration body
 
-```
+```text
 line is {{$err.Line}}, col is {{$err.Column}}, message is {{$err.Message | printf "%q"}}
 ```
 
 will produce output like below.
 
-```
+```text
 line is 21, col is 20, message is "property \"platform\" is not defined in object type {os: string}"
 ```
 
@@ -190,6 +190,7 @@ Note that special characters escaped with backslash like `\n` in the format stri
 | `3`    | The command failed due to some fatal error              |
 
 <a id="on-github-actions"></a>
+
 ## Use actionlint on GitHub Actions
 
 Preparing `actionlint` executable with the download script is recommended. See [the instruction](install.md#download-script) for
@@ -257,13 +258,14 @@ jobs:
 
 Thanks to WebAssembly, actionlint playground is available on your browser. It never sends any data to outside your browser.
 
-https://matcra587.github.io/actionlint/
+<https://matcra587.github.io/actionlint/>
 
 Paste your workflow content to the code editor at left pane. It automatically shows the results at right pane. When editing
 the workflow content in the code editor, the results will be updated on the fly. Clicking an error message in the results
 table moves a cursor to position of the error in the code editor.
 
 <a id="docker"></a>
+
 ## [Docker][docker] image
 
 Fork releases publish the [container image][docker-image] to `ghcr.io/matcra587/actionlint`. The image contains the
@@ -303,8 +305,8 @@ docker run --rm -v /path/to/workflows:/workflows ghcr.io/matcra587/actionlint:la
 
 Go APIs are available. See [the Go API document](api.md) for more details.
 
-
 <a id="tools-integ"></a>
+
 ## Tools integration
 
 ### reviewdog
@@ -326,6 +328,7 @@ jobs:
 ```
 
 <a id="problem-matchers"></a>
+
 ### Problem Matchers
 
 [Problem Matchers][problem-matchers] is a feature to extract GitHub Actions annotations from terminal outputs of linters.
@@ -413,7 +416,7 @@ while editing actions.
 ### trunk
 
 [trunk][trunk-io] is an extendable superlinter with a builtin language server and preexisting issue detection. Actionlint is
-integrated [here](https://github.com/trunk-io/plugins).
+integrated through the [trunk plugins repository](https://github.com/trunk-io/plugins).
 
 Once you have [initialized trunk in your repo](https://docs.trunk.io/docs/check-get-started), to enable at the latest actionlint
 version, just run:

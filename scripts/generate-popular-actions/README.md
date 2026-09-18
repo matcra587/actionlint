@@ -1,12 +1,11 @@
-generate-popular-actions
-========================
+# generate-popular-actions
 
 This is a script for generating [`popular_actions.go`](../../popular_actions.go).
 
 It does:
 
 - Fetches metadata of popular actions
-  - from https://github.com
+  - from <https://github.com>
   - from JSONL file in local
 - Generates the fetched data set of metadata
   - as Go source file

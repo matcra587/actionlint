@@ -1,5 +1,4 @@
-actionlint 1 "" actionlint "User Manual"
-=======================================
+# actionlint 1 "" actionlint "User Manual"
 
 ## NAME
 
@@ -12,7 +11,6 @@ actionlint - static checker for GitHub Actions workflow files
 `actionlint` [*flags*] *file*...
 
 `actionlint` [*flags*] -
-
 
 ## DESCRIPTION
 
@@ -29,7 +27,6 @@ Features:
 - **Security checks**; script injection by untrusted inputs, hard-coded credentials
 - **Other several useful checks**; glob syntax validation, dependencies check for `needs:`, runner
   label validation, cron syntax validation, ...
-
 
 ## USAGE
 
@@ -52,55 +49,53 @@ with Go template syntax.
 
     $ actionlint -format '{{json .}}'
 
-
 ## FLAGS
 
-  * `-color`:
-    Always enable colorful output. This is useful to force colorful outputs
+- `-color`:
+  Always enable colorful output. This is useful to force colorful outputs
 
-  * `-config-file` *PATH*:
-    File path to config file
+- `-config-file` *PATH*:
+  File path to config file
 
-  * `-debug`:
-    Enable debug output (for development)
+- `-debug`:
+  Enable debug output (for development)
 
-  * `-format` *FORMAT*:
-    Custom template to format error messages in Go template syntax. See the usage documentation
-    for more details.
+- `-format` *FORMAT*:
+  Custom template to format error messages in Go template syntax. See the usage documentation
+  for more details.
 
-  * `-ignore` *PATTERN*:
-    Regular expression matching to error messages you want to ignore. This flag is repeatable. For
-    example, `-ignore A -ignore B` ignores errors whose message includes "A" OR "B".
+- `-ignore` *PATTERN*:
+  Regular expression matching to error messages you want to ignore. This flag is repeatable. For
+  example, `-ignore A -ignore B` ignores errors whose message includes "A" OR "B".
 
-  * `-init-config`:
-    Generate default config file at `.github/actionlint.yaml` in current project
+- `-init-config`:
+  Generate default config file at `.github/actionlint.yaml` in current project
 
-  * `-no-color`:
-    Disable colorful output
+- `-no-color`:
+  Disable colorful output
 
-  * `-oneline`:
-    Use one line per one error. Useful for reading error messages from programs
+- `-oneline`:
+  Use one line per one error. Useful for reading error messages from programs
 
-  * `-pyflakes` *EXECUTABLE*:
-    Command name or file path of "pyflakes" external command. If empty, pyflakes integration will be
-    disabled (default "pyflakes")
+- `-pyflakes` *EXECUTABLE*:
+  Command name or file path of "pyflakes" external command. If empty, pyflakes integration will be
+  disabled (default "pyflakes")
 
-  * `-shellcheck` *EXECUTABLE*:
-    Command name or file path of "shellcheck" external command. If empty, shellcheck integration will
-    be disabled (default "shellcheck")
+- `-shellcheck` *EXECUTABLE*:
+  Command name or file path of "shellcheck" external command. If empty, shellcheck integration will
+  be disabled (default "shellcheck")
 
-  * `-verbose`:
-    Enable verbose output
+- `-verbose`:
+  Enable verbose output
 
-  * `-stdin-filename` *NAME*:
-    File name when reading input from stdin (default "&lt;stdin&gt;")
+- `-stdin-filename` *NAME*:
+  File name when reading input from stdin (default "&lt;stdin&gt;")
 
-  * `-version`:
-    Show version and how this binary was installed
+- `-version`:
+  Show version and how this binary was installed
 
-  * `-help`, `-h`:
-    Show help
-
+- `-help`, `-h`:
+  Show help
 
 ## DOCUMENTS
 
@@ -109,14 +104,14 @@ Documents for more details are available online.
 ### Checks
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-https://github.com/matcra587/actionlint/blob/main/docs/checks.md
+<https://github.com/matcra587/actionlint/blob/main/docs/checks.md>
 
 Full list of all checks done by actionlint with example inputs, outputs, and playground links.
 
 ### Installation
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-https://github.com/matcra587/actionlint/blob/main/docs/install.md
+<https://github.com/matcra587/actionlint/blob/main/docs/install.md>
 
 Installation instructions. Prebuilt binaries, Homebrew package, building from source, a Docker
 image, a download script (for CI) are available.
@@ -124,7 +119,7 @@ image, a download script (for CI) are available.
 ### Usage
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-https://github.com/matcra587/actionlint/blob/main/docs/usage.md
+<https://github.com/matcra587/actionlint/blob/main/docs/usage.md>
 
 How to use `actionlint` command locally or on GitHub Actions, the online playground, an official
 Docker image, and integrations with reviewdog, Problem Matchers, super-linter, pre-commit.
@@ -132,21 +127,21 @@ Docker image, and integrations with reviewdog, Problem Matchers, super-linter, p
 ### Configuration
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-https://github.com/matcra587/actionlint/blob/main/docs/config.md
+<https://github.com/matcra587/actionlint/blob/main/docs/config.md>
 
 How to configure actionlint behavior by the configuration file `actionlint.yaml`.
 
 ### Go API
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-https://github.com/matcra587/actionlint/blob/main/docs/api.md
+<https://github.com/matcra587/actionlint/blob/main/docs/api.md>
 
 How to use actionlint as Go library.
 
 ### References
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-https://github.com/matcra587/actionlint/blob/main/docs/reference.md
+<https://github.com/matcra587/actionlint/blob/main/docs/reference.md>
 
 Links to resources.
 
@@ -154,7 +149,7 @@ Links to resources.
 
 Please try the download script.
 
-https://github.com/matcra587/actionlint/blob/main/scripts/download-actionlint.bash
+<https://github.com/matcra587/actionlint/blob/main/scripts/download-actionlint.bash>
 
 It downloads the latest version of actionlint executable to the current directory automatically.
 On GitHub Actions environment, it sets a file path to executable to`executable` output for using
@@ -163,7 +158,7 @@ the executable in the following steps easily.
 Here is an example of simple workflow to run actionlint on GitHub Actions. Please ensure `shell: bash`
 since the default shell for Windows runners is `pwsh`.
 
-```
+```yaml
 name: Lint GitHub Actions workflows
 on: [push, pull_request]
 
@@ -191,37 +186,33 @@ or simply run
   shell: bash
 ```
 
-
 ## EXIT STATUS
 
 `actionlint` command exits with one of the following exit statuses.
 
-  - **0**: It ran successfully and no problem was found.
-  - **1**: It ran successfully and some problem was found.
-  - **2**: It failed due to invalid command line option.
-  - **3**: It failed due to some fatal error.
-
+- **0**: It ran successfully and no problem was found.
+- **1**: It ran successfully and some problem was found.
+- **2**: It failed due to invalid command line option.
+- **3**: It failed due to some fatal error.
 
 ## PLAYGROUND
 
 Thanks to WebAssembly, actionlint playground is available on your browser. It never sends any data
 to outside of the browser.
 
-https://matcra587.github.io/actionlint/
+<https://matcra587.github.io/actionlint/>
 
 Paste your workflow content to the code editor at left pane. It automatically shows the results at
 right pane. When editing the workflow content at the left pane, the results will be updated on the
 fly in the right pane. Clicking an error message in the results table moves a cursor to the
 position of the error in the code editor.
 
-
 ## BUGS
 
 Please visit issues page to see known bugs. If you found a new bug or have some feature request,
 please report by making a new issue.
 
-https://github.com/matcra587/actionlint/issues
-
+<https://github.com/matcra587/actionlint/issues>
 
 ## COPYRIGHT
 
@@ -231,6 +222,6 @@ Copyright (c) 2026 matcra587
 
 Copyright (c) 2021 rhysd
 
-https://github.com/matcra587/actionlint/blob/main/LICENSE.txt
+<https://github.com/matcra587/actionlint/blob/main/LICENSE.txt>
 
 <!-- vim: set ft=markdown: -->
