@@ -81,31 +81,39 @@ import './wasm_exec.js';
             return new TextDecoder().decode(decompressed);
         }
 
-        const src = `# Paste your workflow YAML to this code editor
-
+        const src = `# Paste your workflow YAML into this editor.
+# Intentionally broken: fix the diagnostics, or paste your own workflow.
+name: CI
 on:
   push:
     branch: main
     tags:
       - 'v\\d+'
+  pull_request:
+permissions:
+  contents: read
 jobs:
   test:
+    needs: build
     strategy:
       matrix:
-        os: [macos-latest, linux-latest]
+        os: [ubuntu-latest, macos-latest]
     runs-on: \${{ matrix.os }}
+    timeout-minutes: soon
     steps:
-      - run: echo "Checking commit '\${{ github.event.head_commit.message }}'"
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node_version: 18.x
-      - uses: actions/cache@v4
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          path: ~/.npm
-          key: \${{ matrix.platform }}-node-\${{ hashFiles('**/package-lock.json') }}
-        if: \${{ github.repository.permissions.admin == true }}
-      - run: npm install && npm test`;
+          bun-version: '1.4.2'
+      - run: echo "PR title is \${{ github.event.pull_request.title }}"
+      - run: echo "Testing on $RUNNER_NAME"
+        env:
+          RUNNER_NAME: \${{ matrix.platform }}
+      - run: bun ci
+      - run: bun test
+        if: \${{ success('extra') }}`;
 
         return src;
     }

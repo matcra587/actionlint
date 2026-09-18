@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
   <head>
     <title>actionlint playground</title>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:title" content="actionlint, a static checker for GitHub Actions workflow files"/>
     <meta name="twitter:image" content="https://github.com/rhysd/ss/blob/master/actionlint/ogp.jpg?raw=true"/>
@@ -10,67 +11,64 @@
     <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <nav id="header-bar" class="navbar" role="navigation" aria-label="header navigation bar">
-      <header class="header">
-        <h1 class="title">
-          <a id="logo" rel="noopener" href="https://github.com/matcra587/actionlint"><i class="devicon-github-original"></i></a>
-          actionlint playground
-          <a rel="noopener" href="https://github.com/rhysd/actionlint/releases/tag/v1.7.12">
-            <span class="tag is-dark" id="version">v1.7.12</span>
+    <header id="header-bar">
+      <a id="logo" href="https://github.com/matcra587/actionlint" aria-label="actionlint source on GitHub"><i class="devicon-github-original" aria-hidden="true"></i></a>
+      <div class="heading">
+        <div class="title-row">
+          <h1>actionlint playground</h1>
+          <a href="https://github.com/rhysd/actionlint/releases/tag/v1.7.12">
+            <span id="version">v1.7.12</span>
           </a>
-        </h1>
-        <h2 class="subtitle">Static checker for GitHub Actions workflow files</h2>
-      </header>
-      <div id="controls" class="navbar-end">
-        <div class="control">
-          <a id="permalink-btn" class="button">Permalink</a>
         </div>
-        <div class="field">
-          <div id="url-input" class="field has-addons">
-            <div class="control">
-              <input id="check-url-input" class="input" type="text" placeholder="GitHub or Gist URL">
-            </div>
-            <div class="control">
-              <a id="check-url-btn" class="button">Check</a>
-            </div>
+        <p class="subtitle">Static checker for GitHub Actions workflow files</p>
+      </div>
+      <div id="controls">
+        <button id="permalink-btn" class="button" type="button">Permalink</button>
+        <div class="url-field">
+          <div id="url-input">
+            <input id="check-url-input" class="input" type="url" aria-label="GitHub or Gist URL" aria-describedby="invalid-input" placeholder="GitHub or Gist URL" spellcheck="false">
+            <button id="check-url-btn" class="button" type="button">Check</button>
           </div>
-          <p id="invalid-input" class="help is-danger"></p>
+          <p id="invalid-input" role="alert"></p>
         </div>
       </div>
-
-    </nav>
+    </header>
     <main>
-      <section id="linter">
-        <div id="editor" class="split-pane"></div>
-        <div class="split-pane">
-          <div id="loading" class="notification sticky has-text-centered">Loading WebAssembly binary...</div>
-          <table id="lint-result" class="table sticky is-hoverable">
-            <tbody id="lint-result-body"></tbody>
-          </table>
-          <div id="error-msg" class="notification sticky is-danger is-light"></div>
-          <div id="success-msg" class="notification sticky">Yay! No error was detected.</div>
-        </div>
+      <section id="linter" aria-label="Workflow checker">
+        <section class="split-pane" aria-labelledby="editor-heading">
+          <h2 id="editor-heading" class="pane-heading">Workflow YAML</h2>
+          <div id="editor"></div>
+        </section>
+        <section class="split-pane" aria-labelledby="results-heading">
+          <h2 id="results-heading" class="pane-heading">Results</h2>
+          <div class="results-content" aria-live="polite">
+            <div id="loading" class="notification" role="status">Loading WebAssembly binary...</div>
+            <table id="lint-result" class="table" aria-label="Workflow diagnostics">
+              <tbody id="lint-result-body"></tbody>
+            </table>
+            <div id="error-msg" class="notification" role="alert"></div>
+            <div id="success-msg" class="notification" role="status">Yay! No error was detected.</div>
+          </div>
+        </section>
       </section>
-      <section id="resources" class="section">
-        <div class="container content">
-          <h2><i id="res-icon" class="devicon-githubactions-plain"></i>Resources</h2>
-          <p>
-            <ul>
-              <li><a class="has-text-link-my-light" target="_blank" rel="noopener" href="https://github.com/matcra587/actionlint/blob/main/docs/checks.md">Checks by actionlint</a></li>
-              <li><a class="has-text-link-my-light" target="_blank" rel="noopener" href="https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions">Workflow syntax for GitHub Actions</a></li>
-              <li><a class="has-text-link-my-light" target="_blank" rel="noopener" href="https://docs.github.com/en/actions/learn-github-actions/contexts">Available contexts in workflow</a></li>
-              <li><a class="has-text-link-my-light" target="_blank" rel="noopener" href="https://docs.github.com/en/actions/reference/security/secure-use">Security hardening for GitHub Actions</a></li>
-            </ul>
-          </p>
+      <section id="resources" aria-labelledby="resources-heading">
+        <div>
+          <h2 id="resources-heading">Resources</h2>
+          <ul>
+              <li><a target="_blank" rel="noopener" href="https://github.com/matcra587/actionlint/blob/main/docs/checks.md">Checks by actionlint</a></li>
+              <li><a target="_blank" rel="noopener" href="https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions">Workflow syntax for GitHub Actions</a></li>
+              <li><a target="_blank" rel="noopener" href="https://docs.github.com/en/actions/learn-github-actions/contexts">Available contexts in workflow</a></li>
+              <li><a target="_blank" rel="noopener" href="https://docs.github.com/en/actions/reference/security/secure-use">Security hardening for GitHub Actions</a></li>
+          </ul>
         </div>
       </section>
     </main>
-    <footer class="footer">
-      <div class="content is-small has-text-centered has-text-grey">
+    <footer>
+      <div>
         <p>
-          <a class="has-text-link-my-light" rel="noopener" href="https://github.com/rhysd/actionlint">actionlint</a> was created by <a class="has-text-link-my-light" rel="noopener" href="https://github.com/rhysd">@rhysd</a>.
-          This <a class="has-text-link-my-light" rel="noopener" href="https://github.com/matcra587/actionlint">fork</a> is maintained by <a class="has-text-link-my-light" rel="noopener" href="https://github.com/matcra587">@matcra587</a>.
-          The source code and website content are licensed <a class="has-text-link-my-light" rel="noopener" href="https://github.com/matcra587/actionlint/blob/main/LICENSE.txt">MIT</a>.
+          <a rel="noopener" href="https://github.com/rhysd/actionlint">actionlint</a> was created by <a rel="noopener" href="https://github.com/rhysd">@rhysd</a>.
+          This <a rel="noopener" href="https://github.com/matcra587/actionlint">fork</a> is maintained by <a rel="noopener" href="https://github.com/matcra587">@matcra587</a>.
+          The source code and website content are licensed <a rel="noopener" href="https://github.com/matcra587/actionlint/blob/main/LICENSE.txt">MIT</a>.
         </p>
       </div>
     </footer>
