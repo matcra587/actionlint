@@ -60,6 +60,9 @@ fi
 mise exec -- hk install --mise
 ```
 
+The pre-commit hook checks Markdown when documentation or its lint configuration changes. It checks all maintained
+Markdown files without formatting or staging them, and temporarily saves unstaged work so it checks the staged content.
+
 The pre-push hook runs `mise run build` first, then runs tests, lint, and workflow validation concurrently.
 Workflow validation uses the built actionlint binary. A failed build blocks all three checks; any check failure fails the hook.
 The hook skips these checks when `CI` is nonempty, matching the previous hook. Builds no longer install hooks automatically.
