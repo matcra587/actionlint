@@ -41,8 +41,19 @@ run = [
     { task = "security" },
     { task = "lint:wasm" },
     "go run ./scripts/check-checks -quiet ./docs/checks.md",
+    { task = "lint:markdown" },
 ]
-run_windows = ["go vet ./...", "staticcheck ./ ./scripts/... ./cmd/...", { task = "security" }]
+run_windows = ["go vet ./...", "staticcheck ./ ./scripts/... ./cmd/...", { task = "security" }, { task = "lint:markdown" }]
+
+["lint:markdown"]
+description = "Lint Markdown using the repository's GitHub Flavored Markdown settings"
+tools.rumdl = "0.2.73"
+run = "rumdl check --deny-config-warnings ."
+
+["format:markdown"]
+description = "Apply Markdown formatting fixes"
+tools.rumdl = "0.2.73"
+run = "rumdl fmt --deny-config-warnings ."
 
 [security]
 description = "Check Go code for reachable vulnerabilities"

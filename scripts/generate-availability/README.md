@@ -1,5 +1,4 @@
-generate-availability
-=====================
+# generate-availability
 
 This is a script for generating [`availability.go`](../../availability.go).
 
@@ -21,7 +20,7 @@ To check these limitations by actionlint, we maintain a table to map workflow ke
 
 ## Usage
 
-```
+```text
 generate-availability [[srcfile] dstfile]
 ```
 

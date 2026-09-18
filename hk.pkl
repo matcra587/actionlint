@@ -31,6 +31,19 @@ local projectChecks = new Mapping<String, Step> {
 }
 
 hooks {
+    ["pre-commit"] {
+        fix = false
+        stage = false
+        stash = "git"
+        steps {
+            ["rumdl"] = (projectStep) {
+                glob = List("**/*.md", "**/*.markdown", "rumdl.toml", "hk.pkl", ".mise/tasks/tasks.toml", "mise.lock")
+                exclude = List("**/testdata/**", "CHANGELOG.md")
+                // Check all documents so config edits also validate unchanged Markdown.
+                check { command = "mise run lint:markdown" }
+            }
+        }
+    }
     ["pre-push"] {
         stage = false
         steps {

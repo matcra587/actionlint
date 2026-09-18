@@ -1,5 +1,4 @@
-All checks done by actionlint
-=============================
+# All checks done by actionlint
 
 This document describes all checks done by [actionlint](..) with example inputs, outputs, and playground links.
 

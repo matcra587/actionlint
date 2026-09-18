@@ -1,5 +1,4 @@
-Playground for actionlint
-=========================
+# Playground for actionlint
 
 This is a development directory for [actionlint playground](https://matcra587.github.io/actionlint/).
 

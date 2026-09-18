@@ -1,0 +1,26 @@
+#:schema https://raw.githubusercontent.com/rvben/rumdl/main/rumdl.schema.json
+
+[global]
+flavor = "gfm"
+# Fixtures intentionally contain malformed Markdown; the changelog is generated.
+exclude = ["**/testdata/**", "CHANGELOG.md"]
+disable = [
+    "MD013", # Keep prose wrapping and diagnostic output intact.
+    "MD033", # GitHub supports the anchors, images and collapsible sections in these docs.
+]
+
+[per-file-ignores]
+# GitHub inserts this template into an existing pull request page.
+".github/pull_request_template.md" = ["MD041"]
+# check-checks requires headings immediately after anchors and bare output fences.
+"docs/checks.md" = ["MD022", "MD040"]
+# The snippet example deliberately shows leading spaces inside an inline code span.
+"docs/usage.md" = ["MD038"]
+# The manual uses both indented command examples and fenced code blocks.
+"man/actionlint.1.md" = ["MD046"]
+
+[MD003]
+style = "consistent"
+
+[MD004]
+style = "dash"
