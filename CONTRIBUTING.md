@@ -184,7 +184,8 @@ To release v1.2.3:
    updated. Ensure CI and security checks pass.
 2. Run `mise run release:check`. To validate the full package and image build locally, run `mise run release:snapshot`
    with a Docker Buildx builder supporting Linux AMD64 and ARM64. Snapshot mode does not publish.
-3. Run `bash ./scripts/bump-version.bash 1.2.3`, which pushes the version bump commit and tag.
+3. Run `mise run release:bump 1.2.3` from a clean `main` checkout. The task writes `VERSION`, uses Clover to update
+   release references, then commits, tags, and pushes the commit followed by the tag. Clover is pinned by the task.
 4. Wait for the release workflow and update the release notes on the [releases page](https://github.com/matcra587/actionlint/releases).
 5. Run `mise run changelog` and commit the updated [CHANGELOG.md](./CHANGELOG.md). This requires
    [changelog-from-release](https://github.com/rhysd/changelog-from-release).

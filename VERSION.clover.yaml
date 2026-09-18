@@ -1,0 +1,4 @@
+- provider: manual
+  id: actionlint-release
+  find: <version>
+  tags: release

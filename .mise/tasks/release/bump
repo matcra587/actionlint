@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+#MISE description="Bump release references with Clover, then commit, tag, and push the release"
+#MISE dir="{{config_root}}"
+#MISE tools."github:gechr/clover"="0.4.3"
+#USAGE arg "<version>" help="Release version without the v prefix, such as 1.2.3"
+
+set -euo pipefail
+
+version="${usage_version?}"
+if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Expected a version in the form 1.2.3; got: ${version}" >&2
+    exit 1
+fi
+
+if [[ "$(git branch --show-current)" != main ]]; then
+    echo "This task must be run on 'main' branch" >&2
+    exit 1
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+    echo 'Working tree is dirty! Commit or remove changes before releasing' >&2
+    exit 1
+fi
+
+if [[ "$(cat VERSION)" == "$version" ]]; then
+    echo "VERSION already contains ${version}" >&2
+    exit 1
+fi
+
+tag="v${version}"
+if git show-ref --verify --quiet "refs/tags/${tag}"; then
+    echo "Tag ${tag} already exists" >&2
+    exit 1
+fi
+
+release_files=(VERSION .pre-commit-hooks.yaml docs/usage.md README.md man/actionlint.1.md playground/index.html)
+# Lint fails on unresolved followers, which `clover run` otherwise only skips.
+clover lint --tag release "${release_files[@]}"
+printf '%s\n' "$version" > VERSION
+# Scope the update to release references. No upstream lookup is needed because
+# VERSION is a manual Clover producer, so unpublished versions are supported.
+clover run --tag release "${release_files[@]}"
+
+git add "${release_files[@]}"
+git commit -m "bump up version to ${tag}"
+git tag "$tag"
+
+# The release workflow waits for successful checks on the main-branch push.
+git push origin main
+git push origin "$tag"
+
+job_url='https://github.com/matcra587/actionlint/actions/workflows/release.yaml'
+printf 'Follow the release at %s\n' "$job_url"
+if [[ "$OSTYPE" == darwin* ]]; then
+    open "$job_url"
+fi

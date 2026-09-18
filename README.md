@@ -141,10 +141,16 @@ actionlint is distributed under [the MIT license](./LICENSE.txt).
 [filter-pattern-doc]: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
 [script-injection-doc]: https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
 [releases]: https://github.com/matcra587/actionlint/releases
+<!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
 [checks]: https://github.com/matcra587/actionlint/blob/main/docs/checks.md
+<!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
 [install]: https://github.com/matcra587/actionlint/blob/main/docs/install.md
+<!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
 [usage]: https://github.com/matcra587/actionlint/blob/main/docs/usage.md
+<!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
 [config]: https://github.com/matcra587/actionlint/blob/main/docs/config.md
+<!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
 [api]: https://github.com/matcra587/actionlint/blob/main/docs/api.md
+<!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
 [refs]: https://github.com/matcra587/actionlint/blob/main/docs/reference.md
 [issue-form]: https://github.com/matcra587/actionlint/issues/new/choose
