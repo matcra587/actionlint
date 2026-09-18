@@ -47,6 +47,10 @@ mise tasks
 Lint tasks install the versions of staticcheck and govulncheck pinned in `.mise/tasks/tasks.toml` and recorded in `mise.lock`.
 Go and Bun continue to manage project dependencies. Tasks do not use timestamp files to skip tests or lint checks.
 
+Repository maintenance shell scripts live as executable file tasks under `.mise/tasks/`.
+The public `scripts/download-actionlint.bash` installer stays standalone so users do not need mise to download actionlint.
+Shell files under `testdata/` are test fixtures rather than maintenance commands.
+
 ### Git hooks
 
 Install [hk](https://hk.jdx.dev/) using the version pinned in `mise.toml`, then enable the repository's hooks:
@@ -97,6 +101,9 @@ around linking libc. `mise run build` does this by default.
 ### Testing
 
 Run `mise run security` to check Go code with the pinned govulncheck version. The lint task also runs this check.
+
+Run `mise run download:test` to exercise the public download script. It requires network access and the release versions
+referenced by the test to be published in the fork.
 
 [![CI](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml)
 [![Generate](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/generate.yaml)
