@@ -13,6 +13,7 @@
   language: docker_image
   types: ["yaml"]
   files: ^\.github/workflows/
+  # clover: from=actionlint-release find=actionlint:<version> tags=release
   entry: ghcr.io/matcra587/actionlint:1.7.12
 - id: actionlint-system
   name: Lint GitHub Actions workflow files

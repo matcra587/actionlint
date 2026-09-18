@@ -1,0 +1,12 @@
+- from: actionlint-release
+  find: actionlint:<version>
+  tags: release
+- from: actionlint-release
+  find: 'rev: v<version>'
+  tags: release
+- from: actionlint-release
+  find: trunk check enable actionlint@<version>
+  tags: release
+- from: actionlint-release
+  find: '- actionlint@<version>'
+  tags: release
