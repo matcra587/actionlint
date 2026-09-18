@@ -1,7 +1,7 @@
 #:schema https://mise.jdx.dev/schema/mise-task.json
 
 [check]
-description = "Build, test, lint, and check repository workflows in order"
+description = "Build, then run tests, lint, and workflow checks concurrently"
 alias = ["default", "all"]
 run = "hk check --all"
 
@@ -104,6 +104,13 @@ run_windows = [
 [generate]
 description = "Refresh generated Go sources from upstream data (requires network access)"
 run = "go generate"
+
+["generate:update"]
+description = "Discover published action versions and refresh generated sources (requires Git and network access)"
+run = [
+    "go run ./scripts/generate-popular-actions -u -r ./scripts/generate-popular-actions/popular_actions.json",
+    { task = "generate" },
+]
 
 ["matcher:generate"]
 description = "Regenerate the GitHub Actions problem matcher"

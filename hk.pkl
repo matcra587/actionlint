@@ -3,15 +3,16 @@ amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pk
 min_hk_version = "2.0.1"
 
 local projectStep = new Step {
-    exclusive = true
     check = new CommandSpec {
         effect = "write"
     }
 }
 
-// Explicit dependencies preserve the existing order and stop after a failure.
+// Build first, then overlap independent checks. Go coordinates its own caches;
+// none of these checks rewrites source files or the actionlint binary.
 local projectChecks = new Mapping<String, Step> {
     ["build"] = (projectStep) {
+        exclusive = true
         check { command = "mise run build" }
     }
     ["test"] = (projectStep) {
@@ -19,11 +20,11 @@ local projectChecks = new Mapping<String, Step> {
         check { command = "mise run test" }
     }
     ["lint"] = (projectStep) {
-        depends = "test"
+        depends = "build"
         check { command = "mise run lint" }
     }
     ["workflows"] = (projectStep) {
-        depends = "lint"
+        depends = "build"
         // The build step already produced the binary for this hook invocation.
         check { command = "mise run --skip-deps workflows" }
     }
