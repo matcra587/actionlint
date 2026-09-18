@@ -51,7 +51,7 @@ run = "govulncheck ./..."
 
 ["lint:shell"]
 description = "Lint repository Bash scripts with ShellCheck"
-run = "shellcheck ./scripts/*.bash ./scripts/generate-actionlint-matcher/*.bash ./playground/*.bash"
+run = "shellcheck ./scripts/*.bash ./.mise/tasks/matcher/fixtures ./.mise/tasks/playground/deploy"
 
 ["lint:docker"]
 description = "Lint the Dockerfile with Hadolint"
@@ -107,19 +107,12 @@ run = "go generate"
 
 ["matcher:generate"]
 description = "Regenerate the GitHub Actions problem matcher"
-run = "node ./scripts/generate-actionlint-matcher/main.mjs .github/actionlint-matcher.json"
-
-["matcher:fixtures"]
-description = "Regenerate matcher fixtures using the freshly built actionlint"
-depends = ["build"]
-# The colored fixture must contain ANSI escapes even in a noninteractive shell.
-env.NO_COLOR = false
-run = "bash ./scripts/generate-actionlint-matcher/fixtures.bash"
+run = "bun ./scripts/generate-actionlint-matcher/main.mjs .github/actionlint-matcher.json"
 
 ["matcher:test"]
 description = "Regenerate matcher fixtures and run the matcher tests"
 depends = ["matcher:fixtures"]
-run = "node ./scripts/generate-actionlint-matcher/test.mjs"
+run = "bun ./scripts/generate-actionlint-matcher/test.mjs"
 
 ["docs:man"]
 description = "Generate the manpage and the playground's HTML manual"
@@ -165,62 +158,56 @@ run = [
 ]
 
 ["playground:deps"]
-description = "Install npm dependencies and copy playground assets"
-depends = ["playground:npm"]
+description = "Install locked Bun dependencies"
 dir = "playground"
-run = "bash ./post-install.bash"
-
-["playground:npm"]
-description = "Install playground npm dependencies when the package files change"
-dir = "playground"
-sources = ["package.json", "package-lock.json"]
-outputs = ["node_modules/.package-lock.json"]
-run = "npm install"
+run = "bun ci"
 
 ["playground:build"]
 description = "Install dependencies and build the playground JavaScript and Wasm"
 depends = ["playground:deps"]
 dir = "playground"
-run = ["npm run build", { task = "playground:wasm" }]
+run = [{ task = "playground:wasm" }, "bun run build"]
 
 ["playground:wasm"]
-description = "Build the playground Wasm binary"
+description = "Build the playground Wasm binary and prepare its Go runtime"
 dir = "playground"
 env.GOOS = "js"
 env.GOARCH = "wasm"
-run = "go build -o main.wasm"
+run = [
+    "go build -o dist/main.wasm",
+    'cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" ./wasm_exec.js',
+]
 
 ["playground:test"]
 description = "Build the playground and run its tests"
 depends = ["playground:build"]
 dir = "playground"
-run = "npm test"
+run = "bun test"
 
 ["playground:ci"]
-description = "Install locked npm dependencies, build, lint, and test the playground"
+description = "Install locked Bun dependencies, build, lint, and test the playground"
 dir = "playground"
 run = [
-    "npm ci",
-    "bash ./post-install.bash",
-    "npm run build",
+    "bun ci",
     { task = "playground:wasm" },
-    "npm run lint",
-    "npm test",
+    "bun run build",
+    "bun run lint",
+    "bun test",
 ]
 
 ["playground:lint"]
 description = "Install playground dependencies and run its linters"
 depends = ["playground:deps"]
 dir = "playground"
-run = "npm run lint"
+run = "bun run lint"
 
 ["playground:serve"]
 description = "Build and serve the playground at localhost:1234"
 depends = ["playground:build"]
 dir = "playground"
-run = "npm run serve"
+run = "bun run serve"
 
 ["playground:clean"]
 description = "Remove generated playground files, retaining node_modules"
 dir = "playground"
-run = ["rm -f ./main.wasm ./index.js ./index.js.map", "rm -rf ./lib"]
+run = ["rm -f ./wasm_exec.js ./main.wasm ./index.js ./index.js.map", "rm -rf ./dist ./lib"]

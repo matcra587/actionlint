@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+#MISE description="Regenerate matcher fixtures using the freshly built actionlint"
+#MISE dir="{{config_root}}"
+#MISE depends=["build"]
+#MISE env.NO_COLOR=false
 
 set -euo pipefail
 

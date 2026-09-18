@@ -35,17 +35,17 @@ Before submitting your PR, please ensure the following points:
 
 # Development
 
-[mise](https://mise.jdx.dev/) runs the development tasks defined in [`tasks.toml`](./tasks.toml).
-Use mise 2026.9.7 or later. Go, ShellCheck, and pyflakes must be on `PATH`; playground and matcher tasks also require Node.js
-and npm. CI continues to select Go versions independently for its compatibility matrix.
+[mise](https://mise.jdx.dev/) runs the development tasks defined in [`.mise/tasks/tasks.toml`](./.mise/tasks/tasks.toml).
+Use mise 2026.9.7 or later. Run `mise install --locked` to install the pinned Go, Bun, and ShellCheck tools.
+Pyflakes must also be on `PATH`. Playground and matcher tasks use Bun.
 
 ```sh
 mise install --locked hk
 mise tasks
 ```
 
-Lint tasks install the versions of staticcheck and govulncheck pinned in `tasks.toml` and recorded in `mise.lock`.
-Go and npm continue to manage project dependencies. Tasks do not use timestamp files to skip tests or lint checks.
+Lint tasks install the versions of staticcheck and govulncheck pinned in `.mise/tasks/tasks.toml` and recorded in `mise.lock`.
+Go and Bun continue to manage project dependencies. Tasks do not use timestamp files to skip tests or lint checks.
 
 ## Git hooks
 
@@ -188,7 +188,7 @@ To release v1.2.3:
 4. Wait for the release workflow and update the release notes on the [releases page](https://github.com/matcra587/actionlint/releases).
 5. Run `mise run changelog` and commit the updated [CHANGELOG.md](./CHANGELOG.md). This requires
    [changelog-from-release](https://github.com/rhysd/changelog-from-release).
-6. Update the playground with `./playground/deploy.bash` if needed.
+6. Update the playground with `mise run playground:deploy` if needed.
 
 ## How to generate the manual
 
@@ -206,30 +206,29 @@ Visit [`playground/README.md`](./playground/README.md).
 
 ## How to deploy playground
 
-Run [`deploy.bash`](./playground/deploy.bash) at root of repository. It does:
+Run `mise run playground:deploy` from anywhere in the repository. The [mise file task](./.mise/tasks/playground/deploy) runs at the repository root. It does:
 
 1. Ensure to install dependencies and to build `main.wasm`
-2. Copy all assets to `./playground-dist` directory
+2. Copy the bundled site from `./playground/dist` to `./playground-dist`
 3. Optimize `main.wasm` with `wasm-opt` which is a part of [Binaryen](https://github.com/WebAssembly/binaryen) toolchain
-3. Switch branch to `gh-pages`
-4. Move all files in `./playground-dist` to root of repository and add to repository
-5. Make commit for deployment
+4. Switch branch to `gh-pages`
+5. Move all files in `./playground-dist` to root of repository and add to repository
+6. Make commit for deployment
 
 ```sh
 # Prepare deployment
-bash ./playground/deploy.bash
-# Check it works fine by visiting localhost:1234
-npm run serve
+mise run playground:deploy
+# Check the server started by the script at localhost:1234, then stop it with Ctrl-C
 # If it looks good, deploy it
 git push
 ```
 
-Note: `SKIP_BUILD_WASM` environment variable can skip building `main.wasm` binary. Please set it when the Wasm binary
-doesn't need to be updated. It is important to avoid bloating a repository size by including a big Wasm binary in a
+Note: `SKIP_BUILD_WASM` preserves the published `main.wasm` instead of replacing it. The local build and tests still run.
+Set it only when the Wasm binary and its matching Go runtime do not need to be updated. It is important to avoid bloating a repository size by including a big Wasm binary in a
 commit.
 
 ```sh
-SKIP_BUILD_WASM=true bash ./playground/deploy.bash
+SKIP_BUILD_WASM=true mise run playground:deploy
 ```
 
 ## Maintain auto-generated sources

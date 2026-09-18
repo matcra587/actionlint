@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2019",
-    "module": "none",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "removeComments": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -13,11 +11,8 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": true
   },
-  "files": [
-    "index.ts",
-    "lib.d.ts",
-    "test.ts"
-  ]
+  "files": ["index.ts", "lib.d.ts", "main.test.ts"]
 }

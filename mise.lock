@@ -2,6 +2,59 @@
 
 lockfile_version = 2
 
+[[tools.bun]]
+version = "1.4.2"
+backend = "core:bun"
+specifiers = ["1.4.2"]
+
+[tools.bun."platforms.linux-arm64"]
+checksum = "sha256:54328bbc2d9c8e0c9f892c544d66c57a83b84139e34909e5ee81758f1ac8fda7"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-aarch64.zip"
+
+[tools.bun."platforms.linux-arm64-musl"]
+checksum = "sha256:71760b6c8ea30623b81a4907cb815d48e2ea266f2e73e751534a44a0607950df"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-aarch64-musl.zip"
+
+[tools.bun."platforms.linux-x64"]
+checksum = "sha256:36368faef7527875d5ffa52e53cd48021741f2a83eb6208a8dd64068d422a913"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64.zip"
+
+[tools.bun."platforms.linux-x64-baseline"]
+checksum = "sha256:c678040f14fe0440eb839d37cbd0ce4c051a32da72806ac97de6a6aab6bf728f"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64-baseline.zip"
+
+[tools.bun."platforms.linux-x64-musl"]
+checksum = "sha256:4835eca59d6da70f4674f5642f6e459dcadab773695b2ed9922d131057989742"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64-musl.zip"
+
+[tools.bun."platforms.linux-x64-musl-baseline"]
+checksum = "sha256:76e1db84e98f22f78de0a87e309bfbbf297732847f9720db36750646c85c8c18"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64-musl-baseline.zip"
+
+[tools.bun."platforms.macos-arm64"]
+checksum = "sha256:90987a3a16d7db556d886ac3d551e7b6d3edf0a1cf43acaed622e8676be1d12f"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-aarch64.zip"
+
+[tools.bun."platforms.macos-x64"]
+checksum = "sha256:80520d7e17526308c9185d261679ac6d27798d3803a0e9f7ff9121ab8affb012"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-x64.zip"
+
+[tools.bun."platforms.macos-x64-baseline"]
+checksum = "sha256:bad5bbd6cf14d0980d115f5954c9ff904df619d5e994d2da1ffccd3f316300b0"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-x64-baseline.zip"
+
+[tools.bun."platforms.windows-arm64"]
+checksum = "sha256:a7a16b876a305fd1029c66dbd27007b4f6112ae896532f675878731a21e50cfd"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-aarch64.zip"
+
+[tools.bun."platforms.windows-x64"]
+checksum = "sha256:ce4c17497b2f29712a99d3d53f028de28cd42e3bacb8589599e7f000e49b6405"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-x64.zip"
+
+[tools.bun."platforms.windows-x64-baseline"]
+checksum = "sha256:78c221c2376f79731ccf4e4af0b3bb46d81fefa3296c5abee09ad8a1b21e68c6"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-x64-baseline.zip"
+
 [[tools.go]]
 version = "1.27.1"
 backend = "core:go"
@@ -19,7 +72,15 @@ url = "https://dl.google.com/go/go1.27.1.linux-arm64.tar.gz"
 checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
 url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
 
+[tools.go."platforms.linux-x64-baseline"]
+checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
+url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
+
 [tools.go."platforms.linux-x64-musl"]
+checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
+url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
+
+[tools.go."platforms.linux-x64-musl-baseline"]
 checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
 url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
 
@@ -31,11 +92,19 @@ url = "https://dl.google.com/go/go1.27.1.darwin-arm64.tar.gz"
 checksum = "sha256:8f8f52c6649542cf027bbc9b9c68d1ec042f9f34808a40413f0b8b3f66f3caa4"
 url = "https://dl.google.com/go/go1.27.1.darwin-amd64.tar.gz"
 
+[tools.go."platforms.macos-x64-baseline"]
+checksum = "sha256:8f8f52c6649542cf027bbc9b9c68d1ec042f9f34808a40413f0b8b3f66f3caa4"
+url = "https://dl.google.com/go/go1.27.1.darwin-amd64.tar.gz"
+
 [tools.go."platforms.windows-arm64"]
 checksum = "sha256:13b69b87bb0e83f96bc68560a8cace7f0343b1e03469f1110ea18d17e3234069"
 url = "https://dl.google.com/go/go1.27.1.windows-arm64.zip"
 
 [tools.go."platforms.windows-x64"]
+checksum = "sha256:a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d"
+url = "https://dl.google.com/go/go1.27.1.windows-amd64.zip"
+
+[tools.go."platforms.windows-x64-baseline"]
 checksum = "sha256:a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d"
 url = "https://dl.google.com/go/go1.27.1.windows-amd64.zip"
 
@@ -72,7 +141,19 @@ url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/gorele
 url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377081"
 provenance = "github-attestations"
 
+[tools.goreleaser."platforms.linux-x64-baseline"]
+checksum = "sha256:0c6122af0ad8fd65638889bf7d3757148b2f80eeff9f079682f0655df66ec8e8"
+url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/goreleaser_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377081"
+provenance = "github-attestations"
+
 [tools.goreleaser."platforms.linux-x64-musl"]
+checksum = "sha256:0c6122af0ad8fd65638889bf7d3757148b2f80eeff9f079682f0655df66ec8e8"
+url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/goreleaser_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377081"
+provenance = "github-attestations"
+
+[tools.goreleaser."platforms.linux-x64-musl-baseline"]
 checksum = "sha256:0c6122af0ad8fd65638889bf7d3757148b2f80eeff9f079682f0655df66ec8e8"
 url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/goreleaser_Linux_x86_64.tar.gz"
 url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377081"
@@ -90,6 +171,12 @@ url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/gorele
 url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377101"
 provenance = "github-attestations"
 
+[tools.goreleaser."platforms.macos-x64-baseline"]
+checksum = "sha256:d0af1f86c439a59ab06c54c505f66fea1a166093dc91a7c0c8aebe3da1cc13b7"
+url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/goreleaser_Darwin_all.tar.gz"
+url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377101"
+provenance = "github-attestations"
+
 [tools.goreleaser."platforms.windows-arm64"]
 checksum = "sha256:e1d1d8fc468ec8ee182b9489fec15a5e6d5c5991f1694039d4b0089ece944c23"
 url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/goreleaser_Windows_arm64.zip"
@@ -97,6 +184,12 @@ url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/54
 provenance = "github-attestations"
 
 [tools.goreleaser."platforms.windows-x64"]
+checksum = "sha256:dbb3112f619c4827311b726b3c98047bce69af1ecee99984d55d450c04c471fc"
+url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/goreleaser_Windows_x86_64.zip"
+url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377158"
+provenance = "github-attestations"
+
+[tools.goreleaser."platforms.windows-x64-baseline"]
 checksum = "sha256:dbb3112f619c4827311b726b3c98047bce69af1ecee99984d55d450c04c471fc"
 url = "https://github.com/goreleaser/goreleaser/releases/download/v2.18.1/goreleaser_Windows_x86_64.zip"
 url_api = "https://api.github.com/repos/goreleaser/goreleaser/releases/assets/546377158"
@@ -125,7 +218,19 @@ url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-l
 url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546506"
 provenance = "github-attestations"
 
+[tools.hadolint."platforms.linux-x64-baseline"]
+checksum = "sha256:c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507"
+url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-x86_64"
+url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546506"
+provenance = "github-attestations"
+
 [tools.hadolint."platforms.linux-x64-musl"]
+checksum = "sha256:c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507"
+url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-x86_64"
+url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546506"
+provenance = "github-attestations"
+
+[tools.hadolint."platforms.linux-x64-musl-baseline"]
 checksum = "sha256:c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507"
 url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-x86_64"
 url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546506"
@@ -143,6 +248,12 @@ url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-m
 url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546509"
 provenance = "github-attestations"
 
+[tools.hadolint."platforms.macos-x64-baseline"]
+checksum = "sha256:ffe9bb18b23d5ed1eae50237aecdbb523d016e96da0bd4e7aa432040acfc3fde"
+url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-macos-x86_64"
+url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546509"
+provenance = "github-attestations"
+
 [tools.hadolint."platforms.windows-arm64"]
 checksum = "sha256:01d927294962b5387f9ead4f18679158452be4f17c765ad0bdffe5264b9c7b0a"
 url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-windows-x86_64.exe"
@@ -150,6 +261,12 @@ url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546
 provenance = "github-attestations"
 
 [tools.hadolint."platforms.windows-x64"]
+checksum = "sha256:01d927294962b5387f9ead4f18679158452be4f17c765ad0bdffe5264b9c7b0a"
+url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-windows-x86_64.exe"
+url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546508"
+provenance = "github-attestations"
+
+[tools.hadolint."platforms.windows-x64-baseline"]
 checksum = "sha256:01d927294962b5387f9ead4f18679158452be4f17c765ad0bdffe5264b9c7b0a"
 url = "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-windows-x86_64.exe"
 url_api = "https://api.github.com/repos/hadolint/hadolint/releases/assets/496546508"
@@ -175,7 +292,17 @@ checksum = "sha256:f14d0290a07f82911f32ea5e4a91dd80d90abb852488912b1ade9b240f70d
 url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-x86_64-unknown-linux-gnu.tar.gz"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
+[tools.hk."platforms.linux-x64-baseline"]
+checksum = "sha256:f14d0290a07f82911f32ea5e4a91dd80d90abb852488912b1ade9b240f70d615"
+url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-x86_64-unknown-linux-gnu.tar.gz"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
+
 [tools.hk."platforms.linux-x64-musl"]
+checksum = "sha256:76269248e27114f361d533551ffca757e58a1d4abe880fd008df16d19128ea97"
+url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-x86_64-unknown-linux-musl.tar.gz"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
+
+[tools.hk."platforms.linux-x64-musl-baseline"]
 checksum = "sha256:76269248e27114f361d533551ffca757e58a1d4abe880fd008df16d19128ea97"
 url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-x86_64-unknown-linux-musl.tar.gz"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
@@ -191,6 +318,11 @@ url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-aarch64-pc-windows-
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
 [tools.hk."platforms.windows-x64"]
+checksum = "sha256:b3cb8ab5958393faacefabfb3a402060eb256b1fda8e1f83c74c3fc877ebff8f"
+url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-x86_64-pc-windows-msvc.zip"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
+
+[tools.hk."platforms.windows-x64-baseline"]
 checksum = "sha256:b3cb8ab5958393faacefabfb3a402060eb256b1fda8e1f83c74c3fc877ebff8f"
 url = "https://github.com/jdx/hk/releases/download/v2.0.1/hk-x86_64-pc-windows-msvc.zip"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
@@ -215,7 +347,17 @@ checksum = "sha256:8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227
 url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz"
 url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056942"
 
+[tools.shellcheck."platforms.linux-x64-baseline"]
+checksum = "sha256:8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198"
+url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz"
+url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056942"
+
 [tools.shellcheck."platforms.linux-x64-musl"]
+checksum = "sha256:8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198"
+url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz"
+url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056942"
+
+[tools.shellcheck."platforms.linux-x64-musl-baseline"]
 checksum = "sha256:8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198"
 url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz"
 url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056942"
@@ -230,12 +372,22 @@ checksum = "sha256:3c89db4edcab7cf1c27bff178882e0f6f27f7afdf54e859fa041fca10febe
 url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.x86_64.tar.xz"
 url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056930"
 
+[tools.shellcheck."platforms.macos-x64-baseline"]
+checksum = "sha256:3c89db4edcab7cf1c27bff178882e0f6f27f7afdf54e859fa041fca10febe4c6"
+url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.x86_64.tar.xz"
+url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056930"
+
 [tools.shellcheck."platforms.windows-arm64"]
 checksum = "sha256:8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e"
 url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.zip"
 url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056944"
 
 [tools.shellcheck."platforms.windows-x64"]
+checksum = "sha256:8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e"
+url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.zip"
+url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056944"
+
+[tools.shellcheck."platforms.windows-x64-baseline"]
 checksum = "sha256:8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e"
 url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.zip"
 url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056944"
@@ -260,7 +412,17 @@ checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655a
 url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
 url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
 
+[tools.staticcheck."platforms.linux-x64-baseline"]
+checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655aa7c"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
+
 [tools.staticcheck."platforms.linux-x64-musl"]
+checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655aa7c"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
+
+[tools.staticcheck."platforms.linux-x64-musl-baseline"]
 checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655aa7c"
 url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
 url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
@@ -275,12 +437,22 @@ checksum = "sha256:a581a26261c9554a9a9450e0de2d0cfd93a7babd4de98cc9ea55644401521
 url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_darwin_amd64.tar.gz"
 url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524226842"
 
+[tools.staticcheck."platforms.macos-x64-baseline"]
+checksum = "sha256:a581a26261c9554a9a9450e0de2d0cfd93a7babd4de98cc9ea556444015216f4"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524226842"
+
 [tools.staticcheck."platforms.windows-arm64"]
 checksum = "sha256:c111b68123d4fb738d09184d8dae37211488431259150c658a4b80d7ef3c1c2c"
 url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_windows_amd64.tar.gz"
 url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524233774"
 
 [tools.staticcheck."platforms.windows-x64"]
+checksum = "sha256:c111b68123d4fb738d09184d8dae37211488431259150c658a4b80d7ef3c1c2c"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_windows_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524233774"
+
+[tools.staticcheck."platforms.windows-x64-baseline"]
 checksum = "sha256:c111b68123d4fb738d09184d8dae37211488431259150c658a4b80d7ef3c1c2c"
 url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_windows_amd64.tar.gz"
 url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524233774"

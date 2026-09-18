@@ -1,16 +1,8 @@
+import { beforeAll, describe, it } from 'bun:test';
+import { strict as assert } from 'node:assert';
 import { JSDOM } from 'jsdom';
-import { promises as fs } from 'fs';
-import { strict as assert } from 'assert';
-import { Crypto } from '@peculiar/webcrypto';
-
-// This polyfill is necessary for Node.js v18 or earlier. `global.crypto` was added at v19.
-// https://github.com/nodejs/node/pull/42083/files
-if (typeof globalThis.crypto === 'undefined') {
-    globalThis.crypto = new Crypto();
-}
-
 // Inject global.Go for testing `main.wasm`.
-require('./lib/js/wasm_exec.js'); // eslint-disable-line @typescript-eslint/no-require-imports
+import './wasm_exec.js';
 
 class CheckResults {
     errors: ActionlintError[] | null = null;
@@ -39,53 +31,48 @@ class CheckResults {
     }
 }
 
-describe('main.wasm', function () {
+describe('main.wasm', () => {
     const results = new CheckResults();
 
-    before(async function () {
+    beforeAll(async () => {
         const dom = new JSDOM('');
-        dom.window.dismissLoading = function () {
+        dom.window.dismissLoading = () => {
             /*do nothing*/
         };
-        dom.window.getYamlSource = function () {
-            return `
+        dom.window.getYamlSource = () => `
 on: push
 
 jobs:
   test:
     steps:
       - run: echo 'hi'`;
-        };
         dom.window.onCheckCompleted = results.onCheckCompleted.bind(results);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        global.window = dom.window as any;
+        global.window = dom.window as unknown as Window & typeof globalThis;
 
         const go = new Go();
-        const bin = await fs.readFile('./main.wasm');
-        const buf = bin.buffer;
+        const buf = await Bun.file(new URL('./dist/main.wasm', import.meta.url)).arrayBuffer();
         const result = await WebAssembly.instantiate(buf, go.importObject);
 
         // Do not `await` this method call since it will never be settled
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        go.run(result.instance);
+        void go.run(result.instance);
     });
 
-    it('shows first result on loading', async function () {
+    it('shows first result on loading', async () => {
         const errors = await results.waitCheckCompleted();
 
         const json = JSON.stringify(errors);
         assert.equal(errors.length, 1, json);
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const err = errors[0]!;
+        const err = errors[0];
+        assert.ok(err);
         assert.equal(err.message, '"runs-on" section is missing in job "test"', `message is unexpected: ${json}`);
         assert.equal(err.line, 5, `line is unexpected: ${json}`);
         assert.equal(err.column, 3, `column is unexpected: ${json}`);
         assert.equal(err.kind, 'syntax-check', `kind is unexpected: ${json}`);
     });
 
-    it('reports some errors by running actionlint with runActionlint', async function () {
+    it('reports some errors by running actionlint with runActionlint', async () => {
         assert.ok(window.runActionlint);
         results.reset();
 
@@ -103,15 +90,15 @@ jobs:
         const json = JSON.stringify(errors);
         assert.equal(errors.length, 1, json);
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const err = errors[0]!;
+        const err = errors[0];
+        assert.ok(err);
         assert.ok(err.message.includes('unknown Webhook event "foo"'), `message is unexpected: ${json}`);
         assert.equal(err.line, 2, `line is unexpected: ${json}`);
         assert.equal(err.column, 5, `column is unexpected: ${json}`);
         assert.equal(err.kind, 'events', `kind is unexpected: ${json}`);
     });
 
-    it('reports no error by running actionlint with runActionlint', async function () {
+    it('reports no error by running actionlint with runActionlint', async () => {
         assert.ok(window.runActionlint);
         results.reset();
 
