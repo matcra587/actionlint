@@ -3,57 +3,57 @@
 lockfile_version = 2
 
 [[tools.bun]]
-version = "1.4.2"
+version = "1.4.4"
 backend = "core:bun"
-specifiers = ["1.4.2"]
+specifiers = ["1.4.4"]
 
 [tools.bun."platforms.linux-arm64"]
-checksum = "sha256:54328bbc2d9c8e0c9f892c544d66c57a83b84139e34909e5ee81758f1ac8fda7"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-aarch64.zip"
+checksum = "sha256:baa6bb36f51d6e58561e02bbea825038a9df454f673d6d776e8bbf86f8c7850e"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-aarch64.zip"
 
 [tools.bun."platforms.linux-arm64-musl"]
-checksum = "sha256:71760b6c8ea30623b81a4907cb815d48e2ea266f2e73e751534a44a0607950df"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-aarch64-musl.zip"
+checksum = "sha256:57f01b02ac7113c61c935f28f38c2eab849e3c970dab21f8b640a87b1ef65009"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-aarch64-musl.zip"
 
 [tools.bun."platforms.linux-x64"]
-checksum = "sha256:36368faef7527875d5ffa52e53cd48021741f2a83eb6208a8dd64068d422a913"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64.zip"
+checksum = "sha256:bf8ccbfb2b0b80159e0f9a6d15c55317add8077534dbc6130a3edb52fccb395c"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64.zip"
 
 [tools.bun."platforms.linux-x64-baseline"]
-checksum = "sha256:c678040f14fe0440eb839d37cbd0ce4c051a32da72806ac97de6a6aab6bf728f"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64-baseline.zip"
+checksum = "sha256:e0446eb55995772eb9894bebae9a6be368d985a8b9271ee124486f9946eedd76"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64-baseline.zip"
 
 [tools.bun."platforms.linux-x64-musl"]
-checksum = "sha256:4835eca59d6da70f4674f5642f6e459dcadab773695b2ed9922d131057989742"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64-musl.zip"
+checksum = "sha256:a5a8ccc5e74dcb883fe974f125a7bdb3b41e5195ed1b870e73f17effd3eb2b2d"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64-musl.zip"
 
 [tools.bun."platforms.linux-x64-musl-baseline"]
-checksum = "sha256:76e1db84e98f22f78de0a87e309bfbbf297732847f9720db36750646c85c8c18"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64-musl-baseline.zip"
+checksum = "sha256:6e9c37098b293920aed28bfb51ab240e26d23bfdd9bbfecb3ad428ac166549bc"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64-musl-baseline.zip"
 
 [tools.bun."platforms.macos-arm64"]
-checksum = "sha256:90987a3a16d7db556d886ac3d551e7b6d3edf0a1cf43acaed622e8676be1d12f"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-aarch64.zip"
+checksum = "sha256:c240d7f0ccb90c263a849fcdb09b7ee62630d921348ed6aafda86b9d577bc510"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-darwin-aarch64.zip"
 
 [tools.bun."platforms.macos-x64"]
-checksum = "sha256:80520d7e17526308c9185d261679ac6d27798d3803a0e9f7ff9121ab8affb012"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-x64.zip"
+checksum = "sha256:50a3491f73abc2fe81673171a85762d3bc2cc1680ccecadd983de99adf77977e"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-darwin-x64.zip"
 
 [tools.bun."platforms.macos-x64-baseline"]
-checksum = "sha256:bad5bbd6cf14d0980d115f5954c9ff904df619d5e994d2da1ffccd3f316300b0"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-x64-baseline.zip"
+checksum = "sha256:d4a155adfbfd09155eb3ba05c9e3a544f39297d7a68616d3c7759f67ab5c47dc"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-darwin-x64-baseline.zip"
 
 [tools.bun."platforms.windows-arm64"]
-checksum = "sha256:a7a16b876a305fd1029c66dbd27007b4f6112ae896532f675878731a21e50cfd"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-aarch64.zip"
+checksum = "sha256:2d57a0eec0cb44d95c918c3f9734f60455a1306ae5085d76fc68f44e3ee30d09"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-windows-aarch64.zip"
 
 [tools.bun."platforms.windows-x64"]
-checksum = "sha256:ce4c17497b2f29712a99d3d53f028de28cd42e3bacb8589599e7f000e49b6405"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-x64.zip"
+checksum = "sha256:cd2c0fccc78f3ede1f50ca827a15f063eda13d4d150a3d0674f4f6e323d864a5"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-windows-x64.zip"
 
 [tools.bun."platforms.windows-x64-baseline"]
-checksum = "sha256:78c221c2376f79731ccf4e4af0b3bb46d81fefa3296c5abee09ad8a1b21e68c6"
-url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-x64-baseline.zip"
+checksum = "sha256:0f20ce6674d4f2dbcc8c5d59fdf99f7ba45f8c3b367e0f5781cbfa30a1c78d99"
+url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-windows-x64-baseline.zip"
 
 [[tools."github:gechr/clover"]]
 version = "0.4.3"
@@ -121,57 +121,57 @@ url = "https://github.com/gechr/clover/releases/download/v0.4.3/clover_windows_a
 url_api = "https://api.github.com/repos/gechr/clover/releases/assets/495877869"
 
 [[tools.go]]
-version = "1.27.1"
+version = "1.27.4"
 backend = "core:go"
-specifiers = ["1.27.1"]
+specifiers = ["1.27.4"]
 
 [tools.go."platforms.linux-arm64"]
-checksum = "sha256:3450b45a3f9ee8568792736a5c5e70a1f2e9b36c35a8f74958c03e51d7d92bec"
-url = "https://dl.google.com/go/go1.27.1.linux-arm64.tar.gz"
+checksum = "sha256:3392582988a273a87ab5043ee1b2c9c17a2c3c00580bf9326c47a2e0aaaeac92"
+url = "https://dl.google.com/go/go1.27.4.linux-arm64.tar.gz"
 
 [tools.go."platforms.linux-arm64-musl"]
-checksum = "sha256:3450b45a3f9ee8568792736a5c5e70a1f2e9b36c35a8f74958c03e51d7d92bec"
-url = "https://dl.google.com/go/go1.27.1.linux-arm64.tar.gz"
+checksum = "sha256:3392582988a273a87ab5043ee1b2c9c17a2c3c00580bf9326c47a2e0aaaeac92"
+url = "https://dl.google.com/go/go1.27.4.linux-arm64.tar.gz"
 
 [tools.go."platforms.linux-x64"]
-checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
-url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
+checksum = "sha256:7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840"
+url = "https://dl.google.com/go/go1.27.4.linux-amd64.tar.gz"
 
 [tools.go."platforms.linux-x64-baseline"]
-checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
-url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
+checksum = "sha256:7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840"
+url = "https://dl.google.com/go/go1.27.4.linux-amd64.tar.gz"
 
 [tools.go."platforms.linux-x64-musl"]
-checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
-url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
+checksum = "sha256:7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840"
+url = "https://dl.google.com/go/go1.27.4.linux-amd64.tar.gz"
 
 [tools.go."platforms.linux-x64-musl-baseline"]
-checksum = "sha256:63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
-url = "https://dl.google.com/go/go1.27.1.linux-amd64.tar.gz"
+checksum = "sha256:7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840"
+url = "https://dl.google.com/go/go1.27.4.linux-amd64.tar.gz"
 
 [tools.go."platforms.macos-arm64"]
-checksum = "sha256:ee215d57e0ec269c60cc9ceca68e6bda321ba9ee5afe24f4b0988703c2d87d12"
-url = "https://dl.google.com/go/go1.27.1.darwin-arm64.tar.gz"
+checksum = "sha256:91a44a2b8a716600ad94a4f143e156116620db8828086a6e3602291be9bd0bb4"
+url = "https://dl.google.com/go/go1.27.4.darwin-arm64.tar.gz"
 
 [tools.go."platforms.macos-x64"]
-checksum = "sha256:8f8f52c6649542cf027bbc9b9c68d1ec042f9f34808a40413f0b8b3f66f3caa4"
-url = "https://dl.google.com/go/go1.27.1.darwin-amd64.tar.gz"
+checksum = "sha256:2b799377704ef12db39bd254995d5c348c9cc8d86562ca817724390e56c38f43"
+url = "https://dl.google.com/go/go1.27.4.darwin-amd64.tar.gz"
 
 [tools.go."platforms.macos-x64-baseline"]
-checksum = "sha256:8f8f52c6649542cf027bbc9b9c68d1ec042f9f34808a40413f0b8b3f66f3caa4"
-url = "https://dl.google.com/go/go1.27.1.darwin-amd64.tar.gz"
+checksum = "sha256:2b799377704ef12db39bd254995d5c348c9cc8d86562ca817724390e56c38f43"
+url = "https://dl.google.com/go/go1.27.4.darwin-amd64.tar.gz"
 
 [tools.go."platforms.windows-arm64"]
-checksum = "sha256:13b69b87bb0e83f96bc68560a8cace7f0343b1e03469f1110ea18d17e3234069"
-url = "https://dl.google.com/go/go1.27.1.windows-arm64.zip"
+checksum = "sha256:9e7a72565792b8ab370b37ac9ac109799237abacb39ff2f541c438b963c0cc64"
+url = "https://dl.google.com/go/go1.27.4.windows-arm64.zip"
 
 [tools.go."platforms.windows-x64"]
-checksum = "sha256:a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d"
-url = "https://dl.google.com/go/go1.27.1.windows-amd64.zip"
+checksum = "sha256:178ab98950ac69ab25069307dc6ade79f3816e414cce95b4da166a115cde1e7e"
+url = "https://dl.google.com/go/go1.27.4.windows-amd64.zip"
 
 [tools.go."platforms.windows-x64-baseline"]
-checksum = "sha256:a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d"
-url = "https://dl.google.com/go/go1.27.1.windows-amd64.zip"
+checksum = "sha256:178ab98950ac69ab25069307dc6ade79f3816e414cce95b4da166a115cde1e7e"
+url = "https://dl.google.com/go/go1.27.4.windows-amd64.zip"
 
 [[tools."go:github.com/cpuguy83/go-md2man/v2"]]
 version = "2.0.7"
@@ -535,66 +535,78 @@ url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellche
 url_api = "https://api.github.com/repos/koalaman/shellcheck/releases/assets/279056944"
 
 [[tools.staticcheck]]
-version = "2026.2.1"
+version = "2026.2.2"
 backend = "aqua:dominikh/go-tools/staticcheck"
-specifiers = ["2026.2.1"]
+specifiers = ["2026.2.2"]
 
 [tools.staticcheck."platforms.linux-arm64"]
-checksum = "sha256:594421f28ba620ea14b98377cb84a309cf73cc420ba0f52f30c7fa4d92fd2b0e"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230775"
+checksum = "sha256:ccbdaaf81c37eb246a6063f811ee3b89e02ff042cb068cd1ca73a7377e2f7045"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633961454"
 
 [tools.staticcheck."platforms.linux-arm64-musl"]
-checksum = "sha256:594421f28ba620ea14b98377cb84a309cf73cc420ba0f52f30c7fa4d92fd2b0e"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230775"
+checksum = "sha256:ccbdaaf81c37eb246a6063f811ee3b89e02ff042cb068cd1ca73a7377e2f7045"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633961454"
 
 [tools.staticcheck."platforms.linux-x64"]
-checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655aa7c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
+checksum = "sha256:14c081e0f0d05b5a4d4c53fd3d357d4a5af9d20501465fefc9024ee828d3aa5c"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633961213"
 
 [tools.staticcheck."platforms.linux-x64-baseline"]
-checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655aa7c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
+checksum = "sha256:14c081e0f0d05b5a4d4c53fd3d357d4a5af9d20501465fefc9024ee828d3aa5c"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633961213"
 
 [tools.staticcheck."platforms.linux-x64-musl"]
-checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655aa7c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
+checksum = "sha256:14c081e0f0d05b5a4d4c53fd3d357d4a5af9d20501465fefc9024ee828d3aa5c"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633961213"
 
 [tools.staticcheck."platforms.linux-x64-musl-baseline"]
-checksum = "sha256:91186205a78db3f2d40efb3c102749aef66f85c2204793de7488d163b655aa7c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524230032"
+checksum = "sha256:14c081e0f0d05b5a4d4c53fd3d357d4a5af9d20501465fefc9024ee828d3aa5c"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633961213"
 
 [tools.staticcheck."platforms.macos-arm64"]
-checksum = "sha256:06db0a00e5d44d0d60bc99dab10e1bd49103531054d560af658775450a25f72c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524227332"
+checksum = "sha256:c054bf7f561f5668175d31ec8770f6104b89ccb41f0f0b4ce92d423c34365417"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633960392"
 
 [tools.staticcheck."platforms.macos-x64"]
-checksum = "sha256:a581a26261c9554a9a9450e0de2d0cfd93a7babd4de98cc9ea556444015216f4"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524226842"
+checksum = "sha256:400ce48d6069432c632cc32e2e54d63000f6037413024310fdc20c930f1df836"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633960199"
 
 [tools.staticcheck."platforms.macos-x64-baseline"]
-checksum = "sha256:a581a26261c9554a9a9450e0de2d0cfd93a7babd4de98cc9ea556444015216f4"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524226842"
+checksum = "sha256:400ce48d6069432c632cc32e2e54d63000f6037413024310fdc20c930f1df836"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633960199"
 
 [tools.staticcheck."platforms.windows-arm64"]
-checksum = "sha256:c111b68123d4fb738d09184d8dae37211488431259150c658a4b80d7ef3c1c2c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_windows_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524233774"
+checksum = "sha256:5f4f9491b41301e6a9d4de6f7542bd2efc1bfaf39e7cc52802d4db9e4a54e677"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_windows_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633962362"
 
 [tools.staticcheck."platforms.windows-x64"]
-checksum = "sha256:c111b68123d4fb738d09184d8dae37211488431259150c658a4b80d7ef3c1c2c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_windows_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524233774"
+checksum = "sha256:5f4f9491b41301e6a9d4de6f7542bd2efc1bfaf39e7cc52802d4db9e4a54e677"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_windows_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633962362"
 
 [tools.staticcheck."platforms.windows-x64-baseline"]
-checksum = "sha256:c111b68123d4fb738d09184d8dae37211488431259150c658a4b80d7ef3c1c2c"
-url = "https://github.com/dominikh/go-tools/releases/download/2026.2.1/staticcheck_windows_amd64.tar.gz"
-url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/524233774"
+checksum = "sha256:5f4f9491b41301e6a9d4de6f7542bd2efc1bfaf39e7cc52802d4db9e4a54e677"
+checksum_source = "mise-versions"
+url = "https://github.com/dominikh/go-tools/releases/download/2026.2.2/staticcheck_windows_amd64.tar.gz"
+url_api = "https://api.github.com/repos/dominikh/go-tools/releases/assets/633962362"

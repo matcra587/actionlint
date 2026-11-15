@@ -33,7 +33,7 @@ run = [
 [lint]
 description = "Run Go analysis, vulnerability checks, and documentation checks"
 alias = "l"
-tools.staticcheck = "2026.2.1"
+tools.staticcheck = "2026.2.2"
 run = [
     "go vet ./...",
     # Restrict staticcheck to project packages, excluding playground/node_modules.
@@ -71,7 +71,7 @@ run = "hadolint --ignore DL3018 --strict-labels Dockerfile"
 
 ["lint:wasm"]
 description = "Run staticcheck on the playground Wasm package"
-tools.staticcheck = "2026.2.1"
+tools.staticcheck = "2026.2.2"
 env.GOOS = "js"
 env.GOARCH = "wasm"
 run = "staticcheck ./playground"
