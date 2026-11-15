@@ -4,8 +4,7 @@ This document describes how to install [actionlint](../docs).
 
 This fork publishes [release binaries][releases] and container images at `ghcr.io/matcra587/actionlint`.
 The community package manager packages and explicitly labeled upstream examples below install the original project.
-To install this fork through Homebrew, use `brew install --cask matcra587/tap/actionlint`.
-For Scoop, add `https://github.com/matcra587/scoop-bucket` as a bucket and install its `actionlint` package.
+Homebrew and Scoop publishing for this fork is deferred; use release binaries or build from source.
 
 ## Windows
 
