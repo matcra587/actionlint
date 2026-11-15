@@ -1,0 +1,16 @@
+on: push
+
+permissions:
+  code-quality: invalid
+  copilot-requests: read
+  vulnerability-alerts: write
+
+jobs:
+  invalid:
+    runs-on: ubuntu-latest
+    permissions:
+      code-quality: READ
+      copilot-requests: read
+      vulnerability-alerts: write
+    steps:
+      - run: echo hello

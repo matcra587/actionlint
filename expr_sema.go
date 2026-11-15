@@ -325,6 +325,11 @@ var BuiltinGlobalVariableTypes = map[string]ExprType{
 			}),
 		),
 		"status": StringType{},
+		// Workflow identity properties are not available on GitHub Enterprise Server.
+		"workflow_file_path":  StringType{},
+		"workflow_ref":        StringType{},
+		"workflow_repository": StringType{},
+		"workflow_sha":        StringType{},
 	}),
 	// https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
 	"steps": NewEmptyStrictObjectType(), // This value will be updated contextually

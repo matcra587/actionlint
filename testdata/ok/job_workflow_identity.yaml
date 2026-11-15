@@ -1,0 +1,14 @@
+on:
+  workflow_call:
+
+jobs:
+  identify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read the current job's workflow identity
+        env:
+          WORKFLOW_REF: ${{ job.workflow_ref }}
+          WORKFLOW_SHA: ${{ job.workflow_sha }}
+          WORKFLOW_REPOSITORY: ${{ job.workflow_repository }}
+          WORKFLOW_FILE_PATH: ${{ job.workflow_file_path }}
+        run: printf '%s\n' "$WORKFLOW_REF" "$WORKFLOW_SHA" "$WORKFLOW_REPOSITORY" "$WORKFLOW_FILE_PATH"

@@ -1,0 +1,6 @@
+test.yaml:4:17: "invalid" is invalid as permission of scope "code-quality". available values are "read", "write", "none" [permissions]
+test.yaml:5:21: "read" is invalid as permission of scope "copilot-requests". available values are "write", "none" [permissions]
+test.yaml:6:25: "write" is invalid as permission of scope "vulnerability-alerts". available values are "read", "none" [permissions]
+test.yaml:12:21: "READ" is invalid as permission of scope "code-quality". available values are "read", "write", "none" [permissions]
+test.yaml:13:25: "read" is invalid as permission of scope "copilot-requests". available values are "write", "none" [permissions]
+test.yaml:14:29: "write" is invalid as permission of scope "vulnerability-alerts". available values are "read", "none" [permissions]

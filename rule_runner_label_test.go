@@ -40,11 +40,11 @@ func TestRuleRunnerLabelCheckLabels(t *testing.T) {
 		},
 		{
 			what:   "self-hosted all macOS runner labels",
-			labels: []string{"self-hosted", "macOS", "macOS-latest", "macOS-15"},
+			labels: []string{"self-hosted", "macOS", "macOS-latest", "macOS-26"},
 		},
 		{
 			what:   "self-hosted all Windows runner labels",
-			labels: []string{"self-hosted", "windows", "windows-latest", "windows-2022"},
+			labels: []string{"self-hosted", "windows", "windows-latest", "windows-2025"},
 		},
 		{
 			what:   "self-hosted Linux runner in upper case",
@@ -76,11 +76,11 @@ func TestRuleRunnerLabelCheckLabels(t *testing.T) {
 		},
 		{
 			what:   "multiple labels for GH-hosted Windows runner",
-			labels: []string{"windows-latest", "windows-2022"},
+			labels: []string{"windows-latest", "windows-2025"},
 		},
 		{
 			what:   "multiple labels for GH-hosted macOS runner",
-			labels: []string{"macos-latest", "macos-15"},
+			labels: []string{"macos-latest", "macos-26"},
 		},
 		{
 			what:   "user-defined labels",
@@ -163,8 +163,102 @@ func TestRuleRunnerLabelCheckLabels(t *testing.T) {
 		},
 		// TODO: Add tests for 'include:'
 		// TODO: Check matrix with 'include:'
+		{
+			what:   "Ubuntu 26.04",
+			labels: []string{"ubuntu-26.04"},
+		},
+		{
+			what:   "Ubuntu 26.04 Arm64",
+			labels: []string{"ubuntu-26.04-arm"},
+		},
+		{
+			what:   "Ubuntu 26.04 with Linux OS label",
+			labels: []string{"linux", "ubuntu-26.04-arm"},
+		},
+		{
+			what:   "Xcode 27",
+			labels: []string{"xcode-27"},
+		},
+		{
+			what:   "Xcode 27 xlarge",
+			labels: []string{"xcode-27-xlarge"},
+		},
+		{
+			what:   "Xcode 27 with macOS OS label",
+			labels: []string{"macos", "xcode-27"},
+		},
+		{
+			what:   "Xcode 27 xlarge with macOS OS label",
+			labels: []string{"macos", "xcode-27-xlarge"},
+		},
+		{
+			what:   "Windows 11 Arm64 with Visual Studio 2026",
+			labels: []string{"windows-11-vs2026-arm"},
+		},
+		{
+			what:   "Windows 11 Arm64 Visual Studio aliases",
+			labels: []string{"windows", "windows-11-arm", "windows-11-vs2026-arm"},
+		},
+		{
+			what:   "Windows Server 2025 Visual Studio aliases",
+			labels: []string{"windows-latest", "windows-2025", "windows-2025-vs2026"},
+		},
+		{
+			what:   "latest large macOS runner aliases macOS 26",
+			labels: []string{"macos-latest-large", "macos-26-large"},
+		},
+		{
+			what:   "current hosted runner labels in matrix",
+			labels: []string{"${{matrix.os}}"},
+			matrix: []string{"ubuntu-26.04", "ubuntu-26.04-arm", "xcode-27", "xcode-27-xlarge", "windows-11-vs2026-arm"},
+		},
 
 		// Error cases
+		{
+			what:   "unsupported Xcode 27 large variant",
+			labels: []string{"xcode-27-large"},
+			errs:   []string{`label "xcode-27-large" is unknown`},
+		},
+		{
+			what:   "unsupported Windows Server Arm64 variant",
+			labels: []string{"windows-2025-vs2026-arm"},
+			errs:   []string{`label "windows-2025-vs2026-arm" is unknown`},
+		},
+		{
+			what:   "Ubuntu 26.04 conflicts with Ubuntu 24.04",
+			labels: []string{"ubuntu-26.04", "ubuntu-24.04"},
+			errs:   []string{`label "ubuntu-24.04" conflicts with label "ubuntu-26.04"`},
+		},
+		{
+			what:   "Xcode 27 conflicts with macOS 26",
+			labels: []string{"xcode-27", "macos-26"},
+			errs:   []string{`label "macos-26" conflicts with label "xcode-27"`},
+		},
+		{
+			what:   "Xcode 27 sizes conflict",
+			labels: []string{"xcode-27", "xcode-27-xlarge"},
+			errs:   []string{`label "xcode-27-xlarge" conflicts with label "xcode-27"`},
+		},
+		{
+			what:   "Windows 11 Arm64 conflicts with Server 2025",
+			labels: []string{"windows-11-vs2026-arm", "windows-2025-vs2026"},
+			errs:   []string{`label "windows-2025-vs2026" conflicts with label "windows-11-vs2026-arm"`},
+		},
+		{
+			what:   "latest Windows conflicts with Windows Server 2022",
+			labels: []string{"windows-latest", "windows-2022"},
+			errs:   []string{`label "windows-2022" conflicts with label "windows-latest"`},
+		},
+		{
+			what:   "latest macOS conflicts with macOS 15",
+			labels: []string{"macos-latest", "macos-15"},
+			errs:   []string{`label "macos-15" conflicts with label "macos-latest"`},
+		},
+		{
+			what:   "latest large macOS conflicts with macOS 15 large",
+			labels: []string{"macos-latest-large", "macos-15-large"},
+			errs:   []string{`label "macos-15-large" conflicts with label "macos-latest-large"`},
+		},
 		{
 			what:   "undefined label",
 			labels: []string{"linux-latest"},

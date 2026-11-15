@@ -78,6 +78,26 @@ func TestExprSemanticsCheckOK(t *testing.T) {
 			expected: StringType{},
 		},
 		{
+			what:     "job context workflow_ref property",
+			input:    "job.workflow_ref",
+			expected: StringType{},
+		},
+		{
+			what:     "job context workflow_sha property",
+			input:    "job.workflow_sha",
+			expected: StringType{},
+		},
+		{
+			what:     "job context workflow_repository property",
+			input:    "job.workflow_repository",
+			expected: StringType{},
+		},
+		{
+			what:     "job context workflow_file_path property",
+			input:    "job.workflow_file_path",
+			expected: StringType{},
+		},
+		{
 			what:     "object property dereference for any type",
 			input:    "github.event.labels",
 			expected: AnyType{},
@@ -869,6 +889,21 @@ func TestExprSemanticsCheckError(t *testing.T) {
 			expected: []string{
 				"property \"foo\" is not defined in object type",
 			},
+		},
+		{
+			what:  "strict job workflow property check",
+			input: "job.workflow_unknown",
+			expected: []string{
+				"property \"workflow_unknown\" is not defined in object type",
+			},
+		},
+		{
+			what:  "job workflow property in unavailable context",
+			input: "job.workflow_ref",
+			expected: []string{
+				"context \"job\" is not allowed here. available context is \"github\"",
+			},
+			availCtx: []string{"github"},
 		},
 		{
 			what:  "strict prop check at object property filter for array dereference",
