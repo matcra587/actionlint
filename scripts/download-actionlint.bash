@@ -43,7 +43,8 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 # Default value is updated manually on release
-version="1.7.12"
+# clover: from=actionlint-release find=<version> tags=release
+version="1.8.0"
 if [ -n "$1" ]; then
     if [[ "$1" != 'latest' && "$1" != 'LATEST' ]]; then
         if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then

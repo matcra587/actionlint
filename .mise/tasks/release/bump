@@ -33,7 +33,7 @@ if git show-ref --verify --quiet "refs/tags/${tag}"; then
     exit 1
 fi
 
-release_files=(VERSION .pre-commit-hooks.yaml docs/usage.md README.md man/actionlint.1.md playground/index.html)
+release_files=(VERSION .pre-commit-hooks.yaml docs/usage.md README.md man/actionlint.1.md playground/index.html scripts/download-actionlint.bash)
 # Lint fails on unresolved followers, which `clover run` otherwise only skips.
 clover lint --tag release "${release_files[@]}"
 printf '%s\n' "$version" > VERSION
