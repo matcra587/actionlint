@@ -103,6 +103,34 @@ paths:
 	}
 }
 
+func TestConfigRejectsMalformedIgnorePatterns(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		value string
+	}{
+		{name: "mapping", value: "{}"},
+		{name: "sequence", value: "[]"},
+		{name: "null", value: "null"},
+		{name: "empty entry", value: ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source := "paths:\n  '**':\n    ignore:\n      - " + tc.value + "\n"
+			config, err := ParseConfig([]byte(source))
+			if err == nil {
+				t.Fatalf("malformed ignore pattern accepted: %q", tc.value)
+			}
+			if config != nil {
+				t.Fatal("invalid configuration was returned")
+			}
+			for _, want := range []string{"ignore", "line:4", "col:"} {
+				if !strings.Contains(err.Error(), want) {
+					t.Errorf("diagnostic %q does not identify %q", err, want)
+				}
+			}
+		})
+	}
+}
+
 func TestConfigPathConfigIgnores(t *testing.T) {
 	tests := []struct {
 		input string
@@ -118,6 +146,11 @@ func TestConfigPathConfigIgnores(t *testing.T) {
 			input: `ignore: []`,
 			msg:   "this is test",
 			want:  false,
+		},
+		{
+			input: `ignore: ['']`,
+			msg:   "explicit empty regex matches all messages",
+			want:  true,
 		},
 		{
 			input: `ignore: ['(is )+']`,

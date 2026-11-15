@@ -3,6 +3,7 @@ package actionlint
 import (
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -537,6 +538,43 @@ func TestReusableWorkflowConvertWorkflowPathToSpec(t *testing.T) {
 				t.Fatalf("wanted spec %q but got %q", tc.want, s)
 			}
 		})
+	}
+}
+
+func TestReusableWorkflowCacheKeepsSiblingMetadataSeparate(t *testing.T) {
+	base := t.TempDir()
+	root := filepath.Join(base, "repo")
+	outside := filepath.Join(base, "repo-other", ".github", "workflows", "reusable.yaml")
+	if err := os.MkdirAll(filepath.Dir(outside), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(root, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	source := "on:\n  workflow_call:\n    inputs:\n      from_disk:\n        type: string\n"
+	if err := os.WriteFile(outside, []byte(source), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	project, err := NewProject(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cache := NewLocalReusableWorkflowCache(project, root, nil)
+	cache.WriteWorkflowCallEvent(outside, &WorkflowCallEvent{
+		Inputs: []*WorkflowCallEventInput{
+			{
+				ID:   "from_ast",
+				Name: &String{Value: "from_ast"},
+				Type: WorkflowCallEventInputTypeString,
+			},
+		},
+	})
+	metadata, err := cache.FindMetadata("./../repo-other/.github/workflows/reusable.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if metadata == nil || metadata.Inputs["from_disk"] == nil || metadata.Inputs["from_ast"] != nil {
+		t.Fatalf("sibling file was incorrectly seeded into the project's metadata cache: %#v", metadata)
 	}
 }
 
