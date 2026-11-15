@@ -62,7 +62,7 @@ run = "govulncheck ./..."
 
 ["lint:shell"]
 description = "Lint repository Bash scripts with ShellCheck"
-run = "shellcheck ./scripts/*.bash ./.mise/tasks/download/test ./.mise/tasks/matcher/fixtures ./.mise/tasks/playground/deploy ./.mise/tasks/release/bump"
+run = "shellcheck ./scripts/*.bash ./scripts/release/*.bash ./.mise/tasks/download/test ./.mise/tasks/matcher/fixtures ./.mise/tasks/playground/deploy ./.mise/tasks/release/tag"
 
 ["lint:docker"]
 description = "Lint the Dockerfile with Hadolint"
@@ -143,26 +143,33 @@ run = [
 
 ["release:check"]
 description = "Validate the release configuration without publishing"
-tools.goreleaser = "2.18.1"
+tools.goreleaser = "2.19.0"
 run = "goreleaser check"
 
 ["release:build"]
 description = "Cross-compile snapshot binaries without publishing"
-tools.goreleaser = "2.18.1"
+tools.goreleaser = "2.19.0"
 run = "goreleaser build --snapshot --clean"
 
 ["release:snapshot"]
 description = "Build snapshot archives and local container images without publishing (requires Docker Buildx)"
-tools.goreleaser = "2.18.1"
+tools.goreleaser = "2.19.0"
 depends = ["docs:man"]
 run = "goreleaser release --snapshot --clean --skip=sign"
 
-[release]
-description = "Publish tagged binaries and container images (requires cosign)"
-tools.goreleaser = "2.18.1"
+["release:preflight"]
+description = "Check release tooling, tests, workflows, and cross-compiled binaries"
+run = [{ task = "release:test" }, { task = "check" }, { task = "lint:shell" }, { task = "release:check" }, { task = "release:build" }]
+
+["release:test"]
+description = "Test release refusal paths and tag creation in disposable repositories"
+run = "bun test ./scripts/release/test.mjs"
+
+["release:publish"]
+description = "Publish a prepared tagged release, including Homebrew and Scoop (CI only)"
+tools.goreleaser = "2.19.0"
 depends = ["docs:man"]
-# Homebrew and Scoop publishing await packaging app credentials.
-run = "goreleaser release --clean --skip=homebrew,scoop"
+run = 'goreleaser release --clean --release-notes=".changes/${GITHUB_REF_NAME:?Run the tag-triggered release workflow}.md"'
 
 [changelog]
 description = "Update CHANGELOG.md (requires changelog-from-release)"

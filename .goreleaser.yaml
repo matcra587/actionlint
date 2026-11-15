@@ -1,8 +1,16 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 version: 2
+
+project_name: actionlint
+report_sizes: true
 
 release:
   draft: false
   prerelease: auto
+  make_latest: '{{ if .Prerelease }}false{{ else }}true{{ end }}'
+
+metadata:
+  mod_timestamp: '{{ .CommitTimestamp }}'
 
 before:
   hooks:
@@ -56,11 +64,13 @@ archives:
 
 homebrew_casks:
   - name: actionlint
+    skip_upload: auto
     directory: Casks
     binaries: [actionlint]
     manpages: [man/actionlint.1]
     homepage: https://github.com/matcra587/actionlint#readme
     description: Static checker for GitHub Actions workflow files
+    commit_msg_template: 'actionlint: {{ .Tag }}'
     dependencies:
       - formula: shellcheck
     repository:
@@ -74,10 +84,12 @@ homebrew_casks:
 
 scoops:
   - name: actionlint
+    skip_upload: auto
     directory: bucket
     homepage: https://github.com/matcra587/actionlint
     description: Static checker for GitHub Actions workflow files
     license: MIT
+    commit_msg_template: 'actionlint: {{ .Tag }}'
     repository:
       owner: matcra587
       name: scoop-bucket
