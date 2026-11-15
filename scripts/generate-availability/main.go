@@ -7,6 +7,7 @@ import (
 	"html"
 	"io"
 	"log"
+	"maps"
 	"net/http"
 	"os"
 	"regexp"
@@ -61,12 +62,10 @@ func (sc switchCases) Add(key string, ctx []string, sp []string) {
 }
 
 func (sc switchCases) ForEach(pred func(c *switchCase)) {
-	ids := make([]string, 0, len(sc))
-	for id, c := range sc {
+	for _, c := range sc {
 		sort.Strings(c.cond)
-		ids = append(ids, id)
 	}
-	sort.Strings(ids)
+	ids := slices.Sorted(maps.Keys(sc))
 	for _, id := range ids {
 		pred(sc[id])
 	}
@@ -290,6 +289,7 @@ func source(args []string, url string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch %s: %w", url, err)
 	}
+	defer res.Body.Close()
 	if res.StatusCode < 200 || 300 <= res.StatusCode {
 		return nil, fmt.Errorf("request was not successful for %s: %s", url, res.Status)
 	}
@@ -297,7 +297,6 @@ func source(args []string, url string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch body for %s: %w", url, err)
 	}
-	res.Body.Close()
 
 	dbg.Printf("Fetched %d bytes from %s", len(body), url)
 	return body, nil
@@ -319,23 +318,22 @@ func run(args []string, stdout, stderr, dbgout io.Writer, srcURL string) int {
 		return 1
 	}
 
-	out := stdout
+	// Finish parsing and formatting before opening the destination.
+	var output bytes.Buffer
+	if err := generate(src, &output); err != nil {
+		fmt.Fprintln(stderr, err)
+		return 1
+	}
+
 	dst := "<stdout>"
 	if len(args) > 0 && args[len(args)-1] != "-" {
 		dst = args[len(args)-1]
-		f, err := os.Create(dst)
-		if err != nil {
-			fmt.Fprintln(stderr, err)
-			return 1
-		}
-		defer f.Close()
-		out = f
+		err = os.WriteFile(dst, output.Bytes(), 0o666)
+	} else {
+		_, err = stdout.Write(output.Bytes())
 	}
-
-	dbg.Println("Writing output to", dst)
-
-	if err := generate(src, out); err != nil {
-		fmt.Fprintln(stderr, err)
+	if err != nil {
+		fmt.Fprintln(stderr, fmt.Errorf("could not write output: %w", err))
 		return 1
 	}
 

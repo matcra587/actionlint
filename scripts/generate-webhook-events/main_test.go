@@ -110,3 +110,83 @@ func TestFetchURL(t *testing.T) {
 		t.Fatal("Fetched source is empty")
 	}
 }
+
+func TestFailedGenerationPreservesOutput(t *testing.T) {
+	for _, existing := range []bool{false, true} {
+		name := "absent"
+		if existing {
+			name = "existing"
+		}
+		t.Run(name, func(t *testing.T) {
+			output := filepath.Join(t.TempDir(), "generated.go")
+			const original = "// previous generated output\n"
+			if existing {
+				if err := os.WriteFile(output, []byte(original), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			input := filepath.Join("testdata", "no_heading.html")
+			const wantError = `heading was missing`
+			err := run([]string{input, output}, io.Discard, io.Discard, "")
+			if err == nil || !strings.Contains(err.Error(), wantError) {
+				t.Fatalf("expected parser failure, got %v", err)
+			}
+			contents, err := os.ReadFile(output)
+			if !existing {
+				if !errors.Is(err, os.ErrNotExist) {
+					t.Fatalf("failed generation created output: %q, %v", contents, err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(contents) != original {
+				t.Fatalf("failed generation changed output: %q", contents)
+			}
+		})
+	}
+}
+
+func TestWriteFile(t *testing.T) {
+	for _, name := range []string{"new", "existing", "invalid destination"} {
+		t.Run(name, func(t *testing.T) {
+			output := filepath.Join(t.TempDir(), "generated.go")
+			switch name {
+			case "existing":
+				if err := os.WriteFile(output, []byte(strings.Repeat("old content\n", 10000)), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			case "invalid destination":
+				if err := os.Mkdir(output, 0o755); err != nil {
+					t.Fatal(err)
+				}
+			}
+			var stdout strings.Builder
+			err := run([]string{filepath.Join("testdata", "ok.html"), output}, &stdout, io.Discard, "")
+			if name == "invalid destination" {
+				if err == nil || !strings.Contains(err.Error(), "could not write output") {
+					t.Fatalf("expected write failure, got %v", err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			have, err := os.ReadFile(output)
+			if err != nil {
+				t.Fatal(err)
+			}
+			want, err := os.ReadFile(filepath.Join("testdata", "ok.go"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if diff := cmp.Diff(strings.ReplaceAll(string(want), "\r\n", "\n"), string(have)); diff != "" {
+				t.Fatal(diff)
+			}
+			if stdout.Len() != 0 {
+				t.Fatalf("file output also wrote to stdout: %q", stdout.String())
+			}
+		})
+	}
+}

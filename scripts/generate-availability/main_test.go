@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/iotest"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -39,13 +41,15 @@ func TestOKWriteStdout(t *testing.T) {
 
 func TestOKWriteFile(t *testing.T) {
 	in := filepath.Join("testdata", "ok.md")
-	out := filepath.Join("testdata", "_test_output.go")
+	out := filepath.Join(t.TempDir(), "generated.go")
+	if err := os.WriteFile(out, []byte(strings.Repeat("old content\n", 10000)), 0o644); err != nil {
+		t.Fatal(err)
+	}
 
 	stdout, stderr, status := testRunMain([]string{in, out})
 	if status != 0 {
 		t.Fatalf("status was non-zero: %d: %q", status, stderr)
 	}
-	defer os.Remove(out)
 
 	b, err := os.ReadFile(filepath.Join("testdata", "ok.go"))
 	if err != nil {
@@ -184,6 +188,89 @@ func TestCmdError(t *testing.T) {
 			}
 			if !strings.Contains(stderr, tc.want) {
 				t.Fatalf("stderr does not contain %q: %q", tc.want, stderr)
+			}
+		})
+	}
+}
+
+func TestFailedGenerationPreservesOutput(t *testing.T) {
+	for _, existing := range []bool{false, true} {
+		name := "absent"
+		if existing {
+			name = "existing"
+		}
+		t.Run(name, func(t *testing.T) {
+			output := filepath.Join(t.TempDir(), "generated.go")
+			const original = "// previous generated output\n"
+			if existing {
+				if err := os.WriteFile(output, []byte(original), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			input := filepath.Join("testdata", "no_heading.md")
+			const wantError = `no "Context availability" table was found`
+			_, stderr, status := testRunMain([]string{input, output})
+			if status == 0 || !strings.Contains(stderr, wantError) {
+				t.Fatalf("expected parser failure, got status %d: %s", status, stderr)
+			}
+			contents, err := os.ReadFile(output)
+			if !existing {
+				if !errors.Is(err, os.ErrNotExist) {
+					t.Fatalf("failed generation created output: %q, %v", contents, err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(contents) != original {
+				t.Fatalf("failed generation changed output: %q", contents)
+			}
+		})
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+type trackedBody struct {
+	io.Reader
+	closed bool
+}
+
+func (b *trackedBody) Close() error { b.closed = true; return nil }
+
+func TestSourceClosesResponse(t *testing.T) {
+	for _, name := range []string{"success", "status error", "read error"} {
+		t.Run(name, func(t *testing.T) {
+			body := &trackedBody{Reader: strings.NewReader("source")}
+			status := http.StatusOK
+			wantError := ""
+			if name == "status error" {
+				status = http.StatusBadGateway
+				wantError = "request was not successful"
+			}
+			if name == "read error" {
+				body.Reader = iotest.ErrReader(errors.New("body failed"))
+				wantError = "body failed"
+			}
+			// source uses the default transport; restore it before the next test.
+			original := http.DefaultTransport
+			t.Cleanup(func() { http.DefaultTransport = original })
+			http.DefaultTransport = roundTripFunc(func(*http.Request) (*http.Response, error) {
+				return &http.Response{StatusCode: status, Body: body}, nil
+			})
+			got, err := source(nil, "https://example.test/contexts.md")
+			if wantError == "" {
+				if err != nil || string(got) != "source" {
+					t.Fatalf("unexpected source: %q, %v", got, err)
+				}
+			} else if err == nil || !strings.Contains(err.Error(), wantError) {
+				t.Fatalf("expected %q, got %v", wantError, err)
+			}
+			if !body.closed {
+				t.Fatal("response body was not closed")
 			}
 		})
 	}
