@@ -33,7 +33,7 @@ run = [
 [lint]
 description = "Run Go analysis, vulnerability checks, and documentation checks"
 alias = "l"
-tools.staticcheck = "2026.2.1"
+tools.staticcheck = "2026.2.2"
 run = [
     "go vet ./...",
     # Restrict staticcheck to project packages, excluding playground/node_modules.
@@ -71,7 +71,7 @@ run = "hadolint --ignore DL3018 --strict-labels Dockerfile"
 
 ["lint:wasm"]
 description = "Run staticcheck on the playground Wasm package"
-tools.staticcheck = "2026.2.1"
+tools.staticcheck = "2026.2.2"
 env.GOOS = "js"
 env.GOARCH = "wasm"
 run = "staticcheck ./playground"
@@ -158,10 +158,11 @@ depends = ["docs:man"]
 run = "goreleaser release --snapshot --clean --skip=sign"
 
 [release]
-description = "Publish a tagged release (requires packaging tokens and cosign)"
+description = "Publish tagged binaries and container images (requires cosign)"
 tools.goreleaser = "2.18.1"
 depends = ["docs:man"]
-run = "goreleaser release --clean"
+# Homebrew and Scoop publishing await packaging app credentials.
+run = "goreleaser release --clean --skip=homebrew,scoop"
 
 [changelog]
 description = "Update CHANGELOG.md (requires changelog-from-release)"

@@ -43,7 +43,8 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 # Default value is updated manually on release
-version="1.7.12"
+# clover: from=actionlint-release find=<version> tags=release
+version="1.8.0"
 if [ -n "$1" ]; then
     if [[ "$1" != 'latest' && "$1" != 'LATEST' ]]; then
         if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -115,14 +116,19 @@ url="https://github.com/matcra587/actionlint/releases/download/v${version}/${fil
 
 echo "Downloading ${url} with curl"
 
+tempdir="$(mktemp -d)"
+trap 'rm -rf "$tempdir"' EXIT
+archive="$tempdir/$file"
+if ! curl --fail --location --output "$archive" "$url"; then
+    echo "Could not download actionlint v${version}. Check that the release and asset exist: ${url}" >&2
+    exit 1
+fi
+
 if [[ "$os" == "windows" ]]; then
-    tempdir="$(mktemp -d actionlint.XXXXXXXXXXXXXXXX)"
-    curl -L -o "$tempdir/tmp.zip" "${url}"
-    unzip "$tempdir/tmp.zip" actionlint.exe -d "$target_dir"
-    rm -r "$tempdir"
+    unzip "$archive" actionlint.exe -d "$target_dir"
     exe="$target_dir/actionlint.exe"
 else
-    curl -L "${url}" | tar xvz -C "$target_dir" actionlint
+    tar xzvf "$archive" -C "$target_dir" actionlint
     exe="$target_dir/actionlint"
 fi
 

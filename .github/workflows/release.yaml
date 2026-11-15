@@ -84,24 +84,10 @@ jobs:
           password: ${{ github.token }}
       - name: Validate release configuration
         run: mise run release:check
-      - name: Create packaging token
-        id: packaging-token
-        # @clover: constraint=major tags=create-github-app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ vars.APP_CLIENT_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: |
-            homebrew-tap
-            scoop-bucket
-          permission-contents: write
-      - name: Publish binaries, packages and container images
+      - name: Publish binaries and container images
         run: mise run release
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          HOMEBREW_GITHUB_TOKEN: ${{ steps.packaging-token.outputs.token }}
-          SCOOP_GITHUB_TOKEN: ${{ steps.packaging-token.outputs.token }}
       - name: Attest release archives
         # @clover: constraint=major tags=attest
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0

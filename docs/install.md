@@ -2,9 +2,9 @@
 
 This document describes how to install [actionlint](../docs).
 
-This fork does not yet publish releases or container images. Build it [from source](#build-from-source).
-The package manager packages and versioned upstream examples below install the original project.
-The fork download script requires a published fork release.
+This fork publishes [release binaries][releases] and container images at `ghcr.io/matcra587/actionlint`.
+The community package manager packages and explicitly labeled upstream examples below install the original project.
+Homebrew and Scoop publishing for this fork is deferred; use release binaries or build from source.
 
 ## Windows
 

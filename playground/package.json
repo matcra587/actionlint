@@ -17,20 +17,20 @@
   "license": "MIT",
   "dependencies": {
     "bulma": "^1.0.4",
-    "codemirror": "^5.65.8",
-    "devicon": "^2.17.0",
+    "codemirror": "^5.65.21",
+    "devicon": "^2.18.0",
     "ismobilejs": "^1.1.1",
-    "pako": "^2.1.0"
+    "pako": "^2.2.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
-    "@types/bun": "^1.4.2",
-    "@types/codemirror": "^5.60.17",
+    "@types/bun": "^1.4.4",
+    "@types/codemirror": "^5.60.18",
     "@types/jsdom": "^27.0.0",
-    "@types/node": "^25.0.3",
+    "@types/node": "^25.9.9",
     "@types/pako": "^2.0.4",
     "http-server": "^14.1.1",
-    "jsdom": "^28.0.0",
+    "jsdom": "^28.1.0",
     "typescript": "^5.9.3"
   }
 }

@@ -274,7 +274,7 @@ Fork releases publish the [container image][docker-image] to `ghcr.io/matcra587/
 Available tags are:
 
 - `actionlint:latest`: Latest stable version of actionlint. This image is recommended.
-- `actionlint:{version}`: Specific version of actionlint. (e.g. `actionlint:1.7.12`)
+- `actionlint:{version}`: Specific version of actionlint. (e.g. `actionlint:1.8.0`)
 
 Just run the image with `docker run`:
 
@@ -369,7 +369,7 @@ Add this to your `.pre-commit-config.yaml` in your repository:
 ---
 repos:
   - repo: https://github.com/matcra587/actionlint
-    rev: v1.7.12
+    rev: v1.8.0
     hooks:
       - id: actionlint
 ```
@@ -428,7 +428,7 @@ trunk check enable actionlint
 or if you'd like a specific version:
 
 ```bash
-trunk check enable actionlint@1.7.12
+trunk check enable actionlint@1.8.0
 ```
 
 or modify `.trunk/trunk.yaml` in your repository to contain:
@@ -436,7 +436,7 @@ or modify `.trunk/trunk.yaml` in your repository to contain:
 ```yaml
 lint:
   enabled:
-    - actionlint@1.7.12
+    - actionlint@1.8.0
 ```
 
 Then just run:

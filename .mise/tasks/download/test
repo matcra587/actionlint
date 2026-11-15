@@ -13,6 +13,7 @@ fi
 set -x
 
 script="$(pwd)/scripts/download-actionlint.bash"
+version="$(cat VERSION)"
 temp_dir="$(mktemp -d)"
 trap 'popd && rm -rf $temp_dir' EXIT
 pushd "$temp_dir"
@@ -39,9 +40,9 @@ fi
 rm -f ./actionlint
 
 # Specify only version
-bash "$script" '1.6.12'
+bash "$script" "$version"
 out="$(./actionlint -version | head -n 1)"
-if [[ "$out" != '1.6.12' ]]; then
+if [[ "$out" != "$version" ]]; then
     echo "Unexpected version: '${out}'" 1>&2
     exit 1
 fi
@@ -59,9 +60,9 @@ rm -rf ./test1
 
 # Specify both version and a download directory
 mkdir ./test2
-bash "$script" '1.6.12' ./test2
+bash "$script" "$version" ./test2
 out="$(./test2/actionlint -version | head -n 1)"
-if [[ "$out" != '1.6.12' ]]; then
+if [[ "$out" != "$version" ]]; then
     echo "Unexpected version: '${out}'" 1>&2
     exit 1
 fi

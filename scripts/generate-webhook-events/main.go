@@ -14,9 +14,10 @@ import (
 	"go/format"
 	"io"
 	"log"
+	"maps"
 	"net/http"
 	"os"
-	"sort"
+	"slices"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -277,11 +278,7 @@ package actionlint
 // repository_dispatch event can contain arbitrary types that are customized by user.
 var AllWebhookTypes = map[string][]string{`)
 
-	keys := make([]string, 0, len(parsed))
-	for k := range parsed {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := slices.Sorted(maps.Keys(parsed))
 
 	for _, k := range keys {
 		ts := parsed[k]
@@ -355,28 +352,25 @@ func run(args []string, stdout, dbgout io.Writer, srcURL string) error {
 		return err
 	}
 
-	var out io.Writer
-	var dst string
-	if len(args) == 0 || args[len(args)-1] == "-" {
-		out = stdout
-		dst = "stdout"
-	} else {
-		dst = args[len(args)-1]
-		f, err := os.Create(dst)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		out = f
-	}
-
 	p, err := parse(src)
 	if err != nil {
 		return err
 	}
-
-	if err := write(p, out); err != nil {
+	// Finish formatting before opening the destination.
+	var output bytes.Buffer
+	if err := write(p, &output); err != nil {
 		return err
+	}
+
+	dst := "stdout"
+	if len(args) == 0 || args[len(args)-1] == "-" {
+		_, err = stdout.Write(output.Bytes())
+	} else {
+		dst = args[len(args)-1]
+		err = os.WriteFile(dst, output.Bytes(), 0o666)
+	}
+	if err != nil {
+		return fmt.Errorf("could not write output: %w", err)
 	}
 
 	dbg.Println("Wrote the output to", dst)

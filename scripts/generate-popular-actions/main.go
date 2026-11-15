@@ -11,16 +11,17 @@ import (
 	"go/format"
 	"io"
 	"log"
+	"maps"
 	"net/http"
 	"os"
 	"slices"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/matcra587/actionlint"
 	"go.yaml.in/yaml/v4"
+	"golang.org/x/sync/errgroup"
 )
 
 // List of known outdated actions which cannot be detected from 'runs' in action.yml
@@ -106,97 +107,77 @@ func (g *gen) registry() ([]*registry, error) {
 	return a, nil
 }
 
-func (g *gen) fetchRemote() (map[string]*actionlint.ActionMetadata, error) {
-	type request struct {
-		action *registry
-		tag    string
-	}
-
-	type fetched struct {
-		spec string
-		meta *actionlint.ActionMetadata
-		err  error
-	}
-
+func (g *gen) fetchRemote(ctx context.Context) (map[string]*actionlint.ActionMetadata, error) {
 	actions, err := g.registry()
 	if err != nil {
 		return nil, err
-	}
-
-	results := make(chan *fetched)
-	reqs := make(chan *request)
-	done := make(chan struct{})
-
-	for i := 0; i <= 4; i++ {
-		go func(ret chan<- *fetched, reqs <-chan *request, done <-chan struct{}) {
-			for {
-				select {
-				case req := <-reqs:
-					url := req.action.rawURL(req.tag)
-					g.log.Println("Start fetching", url)
-					res, err := g.client.Get(url)
-					if err != nil {
-						ret <- &fetched{err: fmt.Errorf("could not fetch %s: %w", url, err)}
-						break
-					}
-					if res.StatusCode < 200 || 300 <= res.StatusCode {
-						ret <- &fetched{err: fmt.Errorf("request was not successful %s: %s", url, res.Status)}
-						break
-					}
-					body, err := io.ReadAll(res.Body)
-					res.Body.Close()
-					if err != nil {
-						ret <- &fetched{err: fmt.Errorf("could not read body for %s: %w", url, err)}
-						break
-					}
-					spec := req.action.spec(req.tag)
-					var meta actionlint.ActionMetadata
-					if err := yaml.Unmarshal(body, &meta); err != nil &&
-						// treosh/lighthouse-ci-action's metadata causes parse error due to typo. Ignore the error not to stop codegen
-						// https://github.com/treosh/lighthouse-ci-action/pull/153
-						!(strings.HasPrefix(spec, "treosh/lighthouse-ci-action@") && strings.Contains(err.Error(), "unexpected key")) {
-						ret <- &fetched{err: fmt.Errorf("could not parse metadata for %s: %w", url, err)}
-						break
-					}
-					if req.action.SkipInputs {
-						meta.SkipInputs = true
-					}
-					if req.action.SkipOutputs {
-						meta.SkipOutputs = true
-					}
-					ret <- &fetched{spec: spec, meta: &meta}
-				case <-done:
-					return
-				}
-			}
-		}(results, reqs, done)
 	}
 
 	n := 0
 	for _, action := range actions {
 		n += len(action.Tags)
 	}
-
-	go func(reqs chan<- *request, done <-chan struct{}) {
-		for _, action := range actions {
-			for _, tag := range action.Tags {
-				select {
-				case reqs <- &request{action, tag}:
-				case <-done:
-					return
+	type fetched struct {
+		spec string
+		meta *actionlint.ActionMetadata
+	}
+	results := make([]fetched, n)
+	group, ctx := errgroup.WithContext(ctx)
+	group.SetLimit(5)
+	next := 0
+	for _, action := range actions {
+		for _, tag := range action.Tags {
+			i := next
+			next++
+			group.Go(func() error {
+				if err := ctx.Err(); err != nil {
+					return err
 				}
-			}
+				url := action.rawURL(tag)
+				g.log.Println("Start fetching", url)
+				req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+				if err != nil {
+					return fmt.Errorf("could not fetch %s: %w", url, err)
+				}
+				res, err := g.client.Do(req)
+				if err != nil {
+					return fmt.Errorf("could not fetch %s: %w", url, err)
+				}
+				defer res.Body.Close()
+				if res.StatusCode < 200 || 300 <= res.StatusCode {
+					return fmt.Errorf("request was not successful %s: %s", url, res.Status)
+				}
+				body, err := io.ReadAll(res.Body)
+				if err != nil {
+					return fmt.Errorf("could not read body for %s: %w", url, err)
+				}
+				spec := action.spec(tag)
+				var meta actionlint.ActionMetadata
+				if err := yaml.Unmarshal(body, &meta); err != nil &&
+					// treosh/lighthouse-ci-action's metadata causes parse error due to typo. Ignore the error not to stop codegen
+					// https://github.com/treosh/lighthouse-ci-action/pull/153
+					!(strings.HasPrefix(spec, "treosh/lighthouse-ci-action@") && strings.Contains(err.Error(), "unexpected key")) {
+					return fmt.Errorf("could not parse metadata for %s: %w", url, err)
+				}
+				if action.SkipInputs {
+					meta.SkipInputs = true
+				}
+				if action.SkipOutputs {
+					meta.SkipOutputs = true
+				}
+				results[i] = fetched{spec: spec, meta: &meta}
+				return nil
+			})
 		}
-	}(reqs, done)
+	}
+	// Join every request, including cancelled siblings, before returning or
+	// consuming results. Each worker owns one slot, so no result channel can leak.
+	if err := group.Wait(); err != nil {
+		return nil, err
+	}
 
 	ret := make(map[string]*actionlint.ActionMetadata, n)
-	for i := 0; i < n; i++ {
-		f := <-results
-		if f.err != nil {
-			close(done)
-			return nil, f.err
-		}
-
+	for _, f := range results {
 		// Workaround for #416.
 		// Once this PR is merged, remove this `if` statement and regenerate popular_actions.go.
 		// https://github.com/dorny/paths-filter/pull/236
@@ -221,7 +202,6 @@ func (g *gen) fetchRemote() (map[string]*actionlint.ActionMetadata, error) {
 		ret[f.spec] = f.meta
 	}
 
-	close(done)
 	return ret, nil
 }
 
@@ -248,11 +228,7 @@ package actionlint
 var PopularActions = map[string]*ActionMetadata{
 `)
 
-	specs := make([]string, 0, len(actions))
-	for s := range actions {
-		specs = append(specs, s)
-	}
-	sort.Strings(specs)
+	specs := slices.Sorted(maps.Keys(actions))
 
 	outdated := []string{}
 	for _, spec := range specs {
@@ -270,11 +246,7 @@ var PopularActions = map[string]*ActionMetadata{
 		}
 
 		if len(meta.Inputs) > 0 && !meta.SkipInputs {
-			ids := make([]string, 0, len(meta.Inputs))
-			for n := range meta.Inputs {
-				ids = append(ids, n)
-			}
-			sort.Strings(ids)
+			ids := slices.Sorted(maps.Keys(meta.Inputs))
 
 			fmt.Fprintf(b, "Inputs: ActionMetadataInputs{\n")
 			for _, id := range ids {
@@ -289,11 +261,7 @@ var PopularActions = map[string]*ActionMetadata{
 		}
 
 		if len(meta.Outputs) > 0 && !meta.SkipOutputs {
-			ids := make([]string, 0, len(meta.Outputs))
-			for n := range meta.Outputs {
-				ids = append(ids, n)
-			}
-			sort.Strings(ids)
+			ids := slices.Sorted(maps.Keys(meta.Outputs))
 
 			fmt.Fprintf(b, "Outputs: ActionMetadataOutputs{\n")
 			for _, id := range ids {
@@ -464,7 +432,7 @@ Flags:`)
 	var actions map[string]*actionlint.ActionMetadata
 	if source == "" {
 		g.log.Println("Fetching data from https://github.com")
-		m, err := g.fetchRemote()
+		m, err := g.fetchRemote(context.Background())
 		if err != nil {
 			fmt.Fprintln(g.stderr, err)
 			return 1

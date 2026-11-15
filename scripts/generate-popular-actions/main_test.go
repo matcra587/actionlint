@@ -2,13 +2,19 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
+	"testing/iotest"
+	"testing/synctest"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -537,4 +543,170 @@ func TestActionBuildSpec(t *testing.T) {
 	if have != want {
 		t.Errorf("Wanted %q but have %q", want, have)
 	}
+}
+
+type trackedBody struct {
+	io.Reader
+	closed bool
+}
+
+func (b *trackedBody) Close() error { b.closed = true; return nil }
+
+func TestFetchRemoteClosesResponse(t *testing.T) {
+	for _, name := range []string{"success", "status error", "read error", "invalid YAML"} {
+		t.Run(name, func(t *testing.T) {
+			g := newGen(io.Discard, io.Discard, io.Discard)
+			g.rawRegistry = []byte(`[{"slug":"example/action","tags":["v1"]}]`)
+			body := &trackedBody{Reader: strings.NewReader("name: example\nruns:\n  using: node24\n")}
+			status := http.StatusOK
+			wantError := ""
+			switch name {
+			case "status error":
+				status = http.StatusBadGateway
+				wantError = "request was not successful"
+			case "read error":
+				body.Reader = iotest.ErrReader(errors.New("body failed"))
+				wantError = "body failed"
+			case "invalid YAML":
+				body.Reader = strings.NewReader("[")
+				wantError = "could not parse metadata"
+			}
+			g.client.Transport = roundTripFunc(func(*http.Request) (*http.Response, error) {
+				return &http.Response{StatusCode: status, Body: body}, nil
+			})
+			got, err := g.fetchRemote(t.Context())
+			if wantError == "" {
+				if err != nil || len(got) != 1 {
+					t.Fatalf("unexpected metadata: %v, %v", got, err)
+				}
+			} else if err == nil || !strings.Contains(err.Error(), wantError) || got != nil {
+				t.Fatalf("expected %q without partial results, got %v, %v", wantError, got, err)
+			}
+			if !body.closed {
+				t.Fatal("response body was not closed")
+			}
+		})
+	}
+}
+
+type readFunc func([]byte) (int, error)
+
+func (f readFunc) Read(p []byte) (int, error) { return f(p) }
+
+type countedBody struct {
+	io.Reader
+	closed *atomic.Int32
+}
+
+func (b *countedBody) Close() error { b.closed.Add(1); return nil }
+
+func TestFetchRemoteCancellation(t *testing.T) {
+	for _, phase := range []string{"headers", "body"} {
+		t.Run(phase, func(t *testing.T) {
+			synctest.Test(t, func(t *testing.T) {
+				g := newGen(io.Discard, io.Discard, io.Discard)
+				g.rawRegistry = []byte(`[{"slug":"example/action","tags":["v1","v2","v3","v4","v5","v6"]}]`)
+				failure := errors.New("metadata fetch failed")
+				var active, calls, closed atomic.Int32
+				g.client.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+					calls.Add(1)
+					active.Add(1)
+					if strings.Contains(r.URL.Path, "/v1/") {
+						defer active.Add(-1)
+						time.Sleep(time.Second)
+						return nil, failure
+					}
+					wait := func() error {
+						defer active.Add(-1)
+						<-r.Context().Done()
+						return r.Context().Err()
+					}
+					if phase == "headers" {
+						return nil, wait()
+					}
+					return &http.Response{StatusCode: http.StatusOK, Body: &countedBody{
+						Reader: readFunc(func([]byte) (int, error) { return 0, wait() }),
+						closed: &closed,
+					}}, nil
+				})
+				start := time.Now()
+				got, err := g.fetchRemote(t.Context())
+				if !errors.Is(err, failure) || got != nil {
+					t.Fatalf("expected original error without partial results: %v, %v", got, err)
+				}
+				if active.Load() != 0 {
+					t.Error("returned before in-flight requests stopped")
+				}
+				if calls.Load() != 5 {
+					t.Errorf("started %d requests; want only the initial five", calls.Load())
+				}
+				if phase == "body" && closed.Load() != 4 {
+					t.Errorf("closed %d bodies; want 4", closed.Load())
+				}
+				if time.Since(start) != time.Second {
+					t.Error("waited for request timeouts instead of cancelling siblings")
+				}
+			})
+		})
+	}
+}
+
+func TestFetchRemoteConcurrency(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		g := newGen(io.Discard, io.Discard, io.Discard)
+		g.rawRegistry = []byte(`[{"slug":"example/action","tags":["v1","v2","v3","v4","v5","v6"],"skip_inputs":true,"skip_outputs":true}]`)
+		var active, peak, calls, closed atomic.Int32
+		g.client.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			calls.Add(1)
+			current := active.Add(1)
+			defer active.Add(-1)
+			for old := peak.Load(); current > old; old = peak.Load() {
+				if peak.CompareAndSwap(old, current) {
+					break
+				}
+			}
+			time.Sleep(time.Second)
+			body := &countedBody{Reader: strings.NewReader("name: " + r.URL.Path + "\nruns:\n  using: node24\n"), closed: &closed}
+			return &http.Response{StatusCode: http.StatusOK, Body: body}, nil
+		})
+		start := time.Now()
+		got, err := g.fetchRemote(t.Context())
+		if err != nil {
+			t.Fatal(err)
+		}
+		if peak.Load() != 5 || calls.Load() != 6 || closed.Load() != 6 || len(got) != 6 {
+			t.Fatalf("incorrect request lifecycle: peak=%d calls=%d closed=%d results=%d", peak.Load(), calls.Load(), closed.Load(), len(got))
+		}
+		for i := 1; i <= 6; i++ {
+			spec := fmt.Sprintf("example/action@v%d", i)
+			meta := got[spec]
+			if meta == nil || meta.Name != fmt.Sprintf("/example/action/v%d/action.yml", i) || !meta.SkipInputs || !meta.SkipOutputs {
+				t.Errorf("incorrect metadata for %s: %+v", spec, meta)
+			}
+		}
+		if time.Since(start) != 2*time.Second {
+			t.Fatal("requests did not run in two bounded batches")
+		}
+	})
+}
+
+func TestFetchRemoteCallerCancellation(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		g := newGen(io.Discard, io.Discard, io.Discard)
+		g.rawRegistry = []byte(`[{"slug":"example/action","tags":["v1"]}]`)
+		g.client.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			<-r.Context().Done()
+			return nil, r.Context().Err()
+		})
+		ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+		defer cancel()
+		start := time.Now()
+		got, err := g.fetchRemote(ctx)
+		if !errors.Is(err, context.DeadlineExceeded) || got != nil {
+			t.Fatalf("expected caller deadline without results: %v, %v", got, err)
+		}
+		if time.Since(start) != time.Second {
+			t.Fatal("caller cancellation did not stop the request")
+		}
+	})
 }
