@@ -82,6 +82,14 @@ depends = ["build"]
 run = "./actionlint"
 run_windows = ".\\actionlint.exe"
 
+["coverage:report"]
+description = "Convert the CI coverage profile to Cobertura XML and HTML"
+shell = "bash -c"
+run = [
+    "go run github.com/boumenot/gocover-cobertura@v1.5.0 < coverage.txt > coverage.xml",
+    "go tool cover -html=coverage.txt -o coverage.html",
+]
+
 [coverage]
 description = "Generate coverage.out and coverage.html and print coverage totals"
 alias = "cov"

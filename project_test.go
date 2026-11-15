@@ -19,6 +19,38 @@ func testEnsureDotGitDir(dir string) {
 	}
 }
 
+func TestProjectKnowsDirectoryBoundaries(t *testing.T) {
+	base := t.TempDir()
+	root := filepath.Join(base, "repo")
+	if err := os.Mkdir(root, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	project, err := NewProject(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name string
+		path string
+		want bool
+	}{
+		{name: "root", path: root, want: true},
+		{name: "child", path: filepath.Join(root, ".github", "workflows", "ci.yaml"), want: true},
+		{name: "dot-prefixed child", path: filepath.Join(root, "..cache", "ci.yaml"), want: true},
+		{name: "sibling sharing prefix", path: filepath.Join(base, "repo-other", "ci.yaml"), want: false},
+		{name: "sibling extending name", path: filepath.Join(base, "repository", "ci.yaml"), want: false},
+		{name: "parent", path: base, want: false},
+		{name: "normalized traversal", path: root + string(filepath.Separator) + ".." +
+			string(filepath.Separator) + "repo-other" + string(filepath.Separator) + "ci.yaml", want: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := project.Knows(tc.path); got != tc.want {
+				t.Fatalf("project membership for %q: got %v, want %v", tc.path, got, tc.want)
+			}
+		})
+	}
+}
+
 func TestProjectsFindProjectFromPath(t *testing.T) {
 	d := filepath.Join("testdata", "find_project")
 	abs, err := filepath.Abs(d)

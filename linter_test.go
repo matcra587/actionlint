@@ -21,6 +21,82 @@ import (
 
 type testErrorReader struct{}
 
+func TestLinterWorkflowRunUntrustedInputs(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		expression string
+		kind       string
+		want       string
+	}{
+		{
+			name:       "head branch",
+			expression: "github.event.workflow_run.head_branch",
+			kind:       "script",
+			want:       "github.event.workflow_run.head_branch",
+		},
+		{
+			name:       "repository owner",
+			expression: "github.event.workflow_run.head_repository.owner.login",
+			kind:       "script",
+			want:       "github.event.workflow_run.head_repository.owner.login",
+		},
+		{
+			name:       "bracket access",
+			expression: "github.event['workflow_run']['head_branch']",
+			kind:       "script",
+			want:       "github.event.workflow_run.head_branch",
+		},
+		{
+			name:       "environment indirection",
+			expression: "github.event.workflow_run.head_branch",
+			kind:       "environment",
+		},
+		{
+			name:       "boolean comparison",
+			expression: "github.event.workflow_run.head_branch",
+			kind:       "condition",
+		},
+		{
+			name:       "run ID",
+			expression: "github.event.workflow_run.id",
+			kind:       "script",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source := "on:\n  workflow_run:\n    workflows: [CI]\n    types: [completed]\n" +
+				"jobs:\n  check:\n    runs-on: ubuntu-latest\n    steps:\n"
+			switch tc.kind {
+			case "environment":
+				source += "      - env:\n          VALUE: ${{ " + tc.expression + " }}\n        run: echo \"$VALUE\"\n"
+			case "condition":
+				source += "      - if: ${{ " + tc.expression + " == 'main' }}\n        run: echo ok\n"
+			default:
+				source += "      - run: echo ${{ " + tc.expression + " }}\n"
+			}
+			linter, err := NewLinter(io.Discard, &LinterOptions{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			project, err := NewProject(t.TempDir())
+			if err != nil {
+				t.Fatal(err)
+			}
+			errs, err := linter.Lint("test.yaml", []byte(source), project)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tc.want == "" {
+				if len(errs) != 0 {
+					t.Fatalf("safe usage produced diagnostics: %v", errs)
+				}
+			} else if len(errs) != 1 || errs[0].Kind != "expression" ||
+				!strings.Contains(errs[0].Message, tc.want+"\" is potentially untrusted") {
+				t.Fatalf("expected one script-injection warning for %q, got %v", tc.want, errs)
+			}
+		})
+	}
+}
+
 func (r testErrorReader) Read(p []byte) (int, error) {
 	return 0, errors.New("dummy read error")
 }

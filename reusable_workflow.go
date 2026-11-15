@@ -247,13 +247,9 @@ func (c *LocalReusableWorkflowCache) convWorkflowPathToSpec(p string) (string, b
 	if !filepath.IsAbs(p) {
 		p = filepath.Join(c.cwd, p)
 	}
-	r := c.proj.RootDir()
-	if !strings.HasPrefix(p, r) {
+	p, err := filepath.Rel(absPath(c.proj.RootDir()), absPath(p))
+	if err != nil || !filepath.IsLocal(p) {
 		return "", false
-	}
-	p, err := filepath.Rel(r, p)
-	if err != nil {
-		return "", false // Unreachable
 	}
 	p = filepath.ToSlash(p)
 	if !strings.HasPrefix(p, "./") {

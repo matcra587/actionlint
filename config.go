@@ -33,6 +33,9 @@ func (pats *IgnorePatterns) UnmarshalYAML(n *yaml.Node) error {
 	}
 	rs := make([]*regexp.Regexp, 0, len(n.Content))
 	for _, p := range n.Content {
+		if p.Kind != yaml.ScalarNode || p.Tag == "!!null" {
+			return fmt.Errorf("yaml: pattern in \"ignore\" must be a non-null scalar at line:%d,col:%d", p.Line, p.Column)
+		}
 		r, err := regexp.Compile(p.Value)
 		if err != nil {
 			return fmt.Errorf("invalid regular expression %q in \"ignore\" at line%d,col:%d: %w", p.Value, n.Line, n.Column, err)
