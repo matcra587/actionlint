@@ -125,11 +125,6 @@ CI publishes a coverage summary and a downloadable `coverage-<runner>` artifact 
 pull requests. Each artifact includes the Go profile, Cobertura XML, and an HTML report. To generate these reports locally,
 run `mise run test:ci` followed by `mise run coverage:report`. The XML converter is pinned to gocover-cobertura v1.5.0.
 
-GitHub Code Quality coverage uploads are optional. After Code Quality is available and enabled in the repository's
-settings, set the Actions repository variable `CODE_QUALITY_COVERAGE` to `true`. A separate job uploads the Ubuntu
-report as a stable baseline without executing repository code or granting test jobs write permissions. GitHub's uploader
-does not support fork pull requests; those retain their Actions summaries and artifacts.
-
 To measure the code coverage
 
 ```sh

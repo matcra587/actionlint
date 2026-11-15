@@ -90,33 +90,6 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  coverage:
-    name: Coverage report
-    needs: unit-tests
-    # Enable this variable only after Code Quality is available and enabled in repository settings.
-    # GitHub's coverage API currently cannot accept fork PR uploads.
-    if: vars.CODE_QUALITY_COVERAGE == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      code-quality: write # Upload the prepared coverage report to GitHub.
-    steps:
-      # Upload from a fresh runner without checking out or executing repository code.
-      - name: Download coverage
-        # @clover: constraint=major tags=download-artifact
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: coverage-ubuntu-latest
-      - name: Upload coverage to GitHub
-        # Use Ubuntu as the stable comparison baseline; every platform retains its reports.
-        # @clover: constraint=major tags=upload-code-coverage
-        uses: actions/upload-code-coverage@2b21a77928be8d5168c2b9581a67f2adbebacc52 # v1.4.4
-        with:
-          file: coverage.xml
-          language: Go
-          label: code-coverage/go
-
   wasm:
     name: Wasm
     runs-on: ubuntu-latest
