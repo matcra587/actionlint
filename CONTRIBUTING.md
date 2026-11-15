@@ -108,7 +108,6 @@ referenced by the test to be published in the fork.
 [![CI](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/ci.yaml)
 [![Download script](https://github.com/matcra587/actionlint/actions/workflows/download.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/download.yaml)
 [![Release](https://github.com/matcra587/actionlint/actions/workflows/release.yaml/badge.svg)](https://github.com/matcra587/actionlint/actions/workflows/release.yaml)
-[![Codecov](https://codecov.io/gh/matcra587/actionlint/graph/badge.svg)](https://codecov.io/gh/matcra587/actionlint)
 
 Run the following command at the root of this repository.
 
@@ -121,6 +120,15 @@ or
 ```sh
 mise run test
 ```
+
+CI publishes a coverage summary and a downloadable `coverage-<runner>` artifact for each test platform, including fork
+pull requests. Each artifact includes the Go profile, Cobertura XML, and an HTML report. To generate these reports locally,
+run `mise run test:ci` followed by `mise run coverage:report`. The XML converter is pinned to gocover-cobertura v1.5.0.
+
+GitHub Code Quality coverage uploads are optional. After Code Quality is available and enabled in the repository's
+settings, set the Actions repository variable `CODE_QUALITY_COVERAGE` to `true`. A separate job uploads the Ubuntu
+report as a stable baseline without executing repository code or granting test jobs write permissions. GitHub's uploader
+does not support fork pull requests; those retain their Actions summaries and artifacts.
 
 To measure the code coverage
 

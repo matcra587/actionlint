@@ -24,7 +24,6 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-      id-token: write # Codecov OIDC; the action uses tokenless uploads for fork PRs.
     defaults:
       run:
         shell: bash
@@ -39,6 +38,8 @@ jobs:
         # @clover: constraint=major tags=checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Coverage must match the PR diff rather than the synthetic merge commit.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Set up Go
         id: go
@@ -65,16 +66,56 @@ jobs:
         run: |
           echo '::add-matcher::.github/actionlint-matcher.json'
           ./actionlint -color
-      - name: Upload coverage
-        # @clover: constraint=major tags=codecov-action
-        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        with:
-          files: coverage.txt
-          env_vars: OS,GO_VERSION
-          use_oidc: true
+      - name: Prepare coverage reports
+        run: mise run coverage:report
+      - name: Summarize coverage
         env:
-          OS: ${{ matrix.os }}
-          GO_VERSION: ${{ steps.go.outputs.go-version }}
+          COVERAGE_OS: ${{ matrix.os }}
+        run: |
+          {
+            printf '### Go test coverage (%s)\n\n' "$COVERAGE_OS"
+            go tool cover -func coverage.txt | tail -1
+            printf '\nDownload the coverage artifact for the full HTML report.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Save coverage reports
+        # Fork PRs retain summaries and downloadable reports without write permissions.
+        # @clover: constraint=major tags=upload-artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-${{ matrix.os }}
+          path: |
+            coverage.txt
+            coverage.xml
+            coverage.html
+          if-no-files-found: error
+          retention-days: 14
+
+  coverage:
+    name: Coverage report
+    needs: unit-tests
+    # Enable this variable only after Code Quality is available and enabled in repository settings.
+    # GitHub's coverage API currently cannot accept fork PR uploads.
+    if: vars.CODE_QUALITY_COVERAGE == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      code-quality: write # Upload the prepared coverage report to GitHub.
+    steps:
+      # Upload from a fresh runner without checking out or executing repository code.
+      - name: Download coverage
+        # @clover: constraint=major tags=download-artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: coverage-ubuntu-latest
+      - name: Upload coverage to GitHub
+        # Use Ubuntu as the stable comparison baseline; every platform retains its reports.
+        # @clover: constraint=major tags=upload-code-coverage
+        uses: actions/upload-code-coverage@2b21a77928be8d5168c2b9581a67f2adbebacc52 # v1.4.4
+        with:
+          file: coverage.xml
+          language: Go
+          label: code-coverage/go
 
   wasm:
     name: Wasm

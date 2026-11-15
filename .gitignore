@@ -12,4 +12,6 @@
 /actionlint-workflow-ast
 /.idea
 /coverage.out
+/coverage.txt
+/coverage.xml
 /coverage.html
