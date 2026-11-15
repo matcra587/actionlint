@@ -29,26 +29,42 @@ jobs:
       attestations: write # Upload release provenance.
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -euo pipefail {0}
     steps:
-      - name: Validate release tag
-        run: |
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Expected a stable release tag such as v1.2.3"
-            exit 1
-          fi
-          echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
-      - name: Wait for checks on the tagged commit
-        uses: matcra587/github-actions/packages/await-gates@2340f3f78bb0853dbef8f6d80b97dd632bb06a65 # await-gates/v0.1.1
-        with:
-          gates: ci.yaml codeql.yaml
-          ref: ${{ github.sha }}
       - name: Checkout
         # @clover: constraint=major tags=checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Validate release tag
+        run: |
+          source scripts/release/version.bash
+          version="$(release_version "$GITHUB_REF_NAME")"
+          if [[ "$(cat VERSION)" != "$version" ]]; then
+            echo '::error::VERSION does not match the release tag'
+            exit 1
+          fi
+          if [[ ! -s ".changes/${GITHUB_REF_NAME}.md" ]]; then
+            echo '::error::Prepared release notes are missing or empty'
+            exit 1
+          fi
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
+      - name: Refuse to replace an existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          releases="$(gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/releases")"
+          count="$(jq --arg tag "$GITHUB_REF_NAME" '[.[][] | select(.tag_name == $tag)] | length' <<< "$releases")"
+          if ((count > 0)); then
+            echo '::error::This release already exists; refusing to rebuild or replace published artifacts'
+            exit 1
+          fi
+      - name: Wait for checks on the tagged commit
+        uses: matcra587/github-actions/packages/await-gates@2340f3f78bb0853dbef8f6d80b97dd632bb06a65 # await-gates/v0.1.1
+        with:
+          gates: ci.yaml codeql.yaml
+          ref: ${{ github.sha }}
       - name: Set up Go
         # @clover: constraint=major tags=setup-go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -84,10 +100,33 @@ jobs:
           password: ${{ github.token }}
       - name: Validate release configuration
         run: mise run release:check
-      - name: Publish binaries and container images
-        run: mise run release
+      - name: Check packaging credentials
+        env:
+          APP_CLIENT_ID: ${{ vars.APP_CLIENT_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+        run: |
+          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+            echo '::error::Configure APP_CLIENT_ID and APP_PRIVATE_KEY in the deploy environment before releasing'
+            exit 1
+          fi
+      - name: Create packaging token
+        id: packaging-token
+        # @clover: constraint=major tags=create-github-app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            homebrew-tap
+            scoop-bucket
+          permission-contents: write
+      - name: Publish binaries, packages and container images
+        run: mise run release:publish
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          HOMEBREW_GITHUB_TOKEN: ${{ steps.packaging-token.outputs.token }}
+          SCOOP_GITHUB_TOKEN: ${{ steps.packaging-token.outputs.token }}
       - name: Attest release archives
         # @clover: constraint=major tags=attest
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0

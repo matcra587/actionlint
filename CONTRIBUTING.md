@@ -185,6 +185,8 @@ The [release workflow](.github/workflows/release.yaml) runs for stable `vX.Y.Z` 
 push runs on the tagged commit, then uses GoReleaser to publish release archives, signed GHCR images for Linux AMD64 and
 ARM64, the Homebrew cask in `matcra587/homebrew-tap`, and the Scoop manifest in `matcra587/scoop-bucket`.
 Checksums receive a cosign bundle and GitHub artifact attestation. Container images include SBOMs and build provenance.
+The workflow refuses to replace an existing release. If publication fails after creating a release, inspect the partial
+release and package repositories before recovering it; rerunning will not silently rebuild published artifacts.
 
 Configure the `deploy` environment with `APP_CLIENT_ID` and `APP_PRIVATE_KEY` for a GitHub App installed on both packaging
 repositories with contents write access. GHCR uses the workflow's `GITHUB_TOKEN`; no Docker Hub token is needed.
@@ -192,13 +194,15 @@ Make the GHCR package public after its first publication so anonymous pulls work
 
 To release v1.2.3:
 
-1. Complete release preparation on `main`, including the download script's default version until its version selection is
-   updated. Ensure CI and security checks pass.
-2. Run `mise run release:check`. To validate the full package and image build locally, run `mise run release:snapshot`
-   with a Docker Buildx builder supporting Linux AMD64 and ARM64. Snapshot mode does not publish.
-3. Run `mise run release:bump 1.2.3` from a clean `main` checkout. The task writes `VERSION`, uses Clover to update
-   release references, then commits, tags, and pushes the commit followed by the tag. Clover is pinned by the task.
-4. Wait for the release workflow and update the release notes on the [releases page](https://github.com/matcra587/actionlint/releases).
+1. Prepare the version in a pull request: update `VERSION`, synchronize its Clover release references, and write
+   `.changes/v1.2.3.md`. Merge the preparation and ensure CI and security checks pass.
+2. From a clean `main` checkout matching `origin/main`, run `mise run release --dry-run 1.2.3`. This runs release-command
+   tests, project checks, release configuration validation, and cross-compilation. It does not create or push a tag.
+3. Run `mise run release 1.2.3`. It repeats preflight, creates an annotated tag at the checked commit, and pushes only
+   the tag. It does not commit changes or push `main`. The workflow reads the prepared release notes automatically.
+4. Wait for the release workflow and verify the release archives, Homebrew cask, Scoop manifest, and GHCR images.
+   To validate the full package and image build locally, use `mise run release:snapshot` with a Docker Buildx builder
+   supporting Linux AMD64 and ARM64. Snapshot mode does not publish.
 5. Run `mise run changelog` and commit the updated [CHANGELOG.md](./CHANGELOG.md). This requires
    [changelog-from-release](https://github.com/rhysd/changelog-from-release).
 6. Update the playground with `mise run playground:deploy` if needed.

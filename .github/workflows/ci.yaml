@@ -144,6 +144,8 @@ jobs:
         run: mise run lint:shell
       - name: Validate release configuration
         run: mise run release:check
+      - name: Test release command refusal paths
+        run: mise run release:test
 
   docker:
     name: Dockerfile
