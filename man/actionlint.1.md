@@ -104,14 +104,14 @@ Documents for more details are available online.
 ### Checks
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-<https://github.com/matcra587/actionlint/blob/v1.8.0/docs/checks.md>
+<https://github.com/matcra587/actionlint/blob/v1.9.0/docs/checks.md>
 
 Full list of all checks done by actionlint with example inputs, outputs, and playground links.
 
 ### Installation
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-<https://github.com/matcra587/actionlint/blob/v1.8.0/docs/install.md>
+<https://github.com/matcra587/actionlint/blob/v1.9.0/docs/install.md>
 
 Installation instructions. Prebuilt binaries, Homebrew package, building from source, a Docker
 image, a download script (for CI) are available.
@@ -119,7 +119,7 @@ image, a download script (for CI) are available.
 ### Usage
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-<https://github.com/matcra587/actionlint/blob/v1.8.0/docs/usage.md>
+<https://github.com/matcra587/actionlint/blob/v1.9.0/docs/usage.md>
 
 How to use `actionlint` command locally or on GitHub Actions, the online playground, an official
 Docker image, and integrations with reviewdog, Problem Matchers, super-linter, pre-commit.
@@ -127,21 +127,21 @@ Docker image, and integrations with reviewdog, Problem Matchers, super-linter, p
 ### Configuration
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-<https://github.com/matcra587/actionlint/blob/v1.8.0/docs/config.md>
+<https://github.com/matcra587/actionlint/blob/v1.9.0/docs/config.md>
 
 How to configure actionlint behavior by the configuration file `actionlint.yaml`.
 
 ### Go API
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-<https://github.com/matcra587/actionlint/blob/v1.8.0/docs/api.md>
+<https://github.com/matcra587/actionlint/blob/v1.9.0/docs/api.md>
 
 How to use actionlint as Go library.
 
 ### References
 
 <!-- clover: from=actionlint-release find=/blob\/(main|v[0-9]+\.[0-9]+\.[0-9]+)\/docs/ replace=blob/v<major.minor.patch>/docs tags=release -->
-<https://github.com/matcra587/actionlint/blob/v1.8.0/docs/reference.md>
+<https://github.com/matcra587/actionlint/blob/v1.9.0/docs/reference.md>
 
 Links to resources.
 
